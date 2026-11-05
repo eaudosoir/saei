@@ -184,6 +184,24 @@ footer{text-align:center;color:var(--muted);font-size:.8rem}
 @keyframes up{from{transform:translateY(100%)}to{transform:none}}
 @keyframes fade{from{opacity:0}to{opacity:1}}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+
+/* قوائم مميزة ومتدرجة */
+.step.lock{display:none}
+.step{--sc:var(--accent);--sc2:var(--accent2);border-inline-start:6px solid var(--sc);background:linear-gradient(180deg,color-mix(in srgb,var(--sc) 9%,var(--surface)),var(--surface) 110px)}
+#s-task{--sc:#0d9488;--sc2:#06b6d4}
+#s-groups{--sc:#2563eb;--sc2:#60a5fa}
+#whenSec{--sc:#d97706;--sc2:#fbbf24}
+#s-send{--sc:#16a34a;--sc2:#22c55e}
+.step.open{border-color:color-mix(in srgb,var(--sc) 45%,var(--line));border-inline-start-color:var(--sc);box-shadow:0 0 0 4px color-mix(in srgb,var(--sc) 10%,transparent),var(--shadow)}
+.step.open h2 .n{background:linear-gradient(135deg,var(--sc),var(--sc2));color:#fff}
+.step.done:not(.open) h2 .n{background:color-mix(in srgb,var(--sc) 20%,var(--surface));color:var(--sc)}
+.step h2{color:var(--sc)}
+.step .next{background:linear-gradient(135deg,var(--sc),var(--sc2))}
+.step .g.on{border-color:var(--sc);color:var(--sc);background:color-mix(in srgb,var(--sc) 12%,var(--surface))}
+.step select:focus,.step textarea:focus,.step input:focus{border-color:var(--sc);box-shadow:0 0 0 4px color-mix(in srgb,var(--sc) 18%,transparent)}
+#s-groups{border-radius:28px 12px 28px 12px}
+#whenSec{border-radius:12px 28px 12px 28px}
+#s-send{border-radius:28px}
 </style>
 </head>
 <body>
@@ -760,6 +778,9 @@ function updateSteps(){
   $("s-task").classList.toggle("done",!!b&&!!$("tpl").value&&prio>=0);
   $("s-groups").classList.toggle("done",(picked.length+pickedP.length)>0);
   $("whenSec").classList.toggle("done",(picked.length+pickedP.length)>0&&$("s-task").classList.contains("done"));
+  {const v=visibleSteps();let ok=true;v.forEach(id=>{const el=$(id);el.classList.toggle("lock",!ok);if(ok&&!el.classList.contains("done"))ok=false});
+  const op=v.find(id=>$(id).classList.contains("open"));
+  if(op&&$(op).classList.contains("lock")){const t=v.find(id=>!$(id).classList.contains("done"));if(t&&t!==op){$(op).classList.remove("open");$(t).classList.add("open");curStep=t}}}
   try{updateProg()}catch(e){}
 }
 STEPS.forEach(id=>{const h=$(id).querySelector("h2");
