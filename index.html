@@ -1023,11 +1023,13 @@ async function admRender(){
     row.innerHTML="<div style='font-weight:700'>"+esc(label)+(x.r==="admin"?" <small style='color:var(--done-ink)'>(مشرف)</small>":"")+"</div><div dir='ltr' style='text-align:right;font-weight:700;letter-spacing:1px'>"+esc(code||"—")+"</div><div style='display:flex;gap:6px;flex-wrap:wrap'></div>";
     const bar=row.lastChild;
     const mk=(t,fn,bg)=>{const b=document.createElement("button");b.type="button";b.textContent=t;b.style.cssText="padding:7px 12px;font-size:.85em;background:"+(bg||"var(--soft)")+";color:var(--ink)";b.onclick=fn;bar.appendChild(b)};
-    mk("نسخ الرسالة",async()=>{try{await navigator.clipboard.writeText("السلام عليكم ورحمة الله\nرقمك السري للدخول إلى «ساعي»:\n"+code+"\nالرابط: https://tasks.weyasmo.com\nالرقم خاص بك فلا تشاركه مع أحد.");admMsg("تم نسخ الرسالة لـ "+label)}catch(e){admMsg("تعذّر النسخ",true)}});
+    const msgText="السلام عليكم ورحمة الله\nرقمك السري للدخول إلى «ساعي»:\n"+code+"\nالرابط: https://tasks.weyasmo.com\nالرقم خاص بك فلا تشاركه مع أحد.";
+    mk("نسخ الرسالة",async()=>{try{await navigator.clipboard.writeText(msgText);admMsg("تم نسخ الرسالة لـ "+label)}catch(e){admMsg("تعذّر النسخ",true)}});
+    mk("إرسال واتساب",()=>{window.open("https://wa.me/?text="+encodeURIComponent(msgText),"_blank","noopener")},"#dff7e6");
     mk("رقم جديد",async()=>{
       if(admNeedLogin())return;
       if(!confirm("إصدار رقم جديد لـ "+label+"؟ سيتوقف رقمه القديم فورًا."))return;
-      try{admMsg("جارٍ الإصدار…");await fsWrite(await makeEntry(x.i,label,newSecret(),x.r));await admRender();admMsg("صدر رقم جديد لـ "+label)}catch(e){admMsg(e.message,true)}
+      try{admMsg("جارٍ الإصدار…");await fsWrite(await makeEntry(x.i,label,newSecret(),x.r));await admRender();admMsg("صدر رقم جديد لـ "+label+" — اضغط «إرسال واتساب» في بطاقته")}catch(e){admMsg(e.message,true)}
     });
     if(x.r!=="admin")mk("إيقاف",async()=>{
       if(admNeedLogin())return;
