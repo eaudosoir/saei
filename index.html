@@ -1,0 +1,898 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Cache-Control" content="no-cache">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="icon" type="image/svg+xml" href="icon.svg">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="ساعي">
+<meta name="theme-color" content="#0f766e">
+<title>ساعي — مهام المعلمين لأولياء الأمور</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;600;700&display=swap">
+<style>
+:root{
+  --bg:#f2f8f8; --surface:#ffffff; --ink:#12302d; --muted:#5f7f7b; --line:#dcecea;
+  --accent:#0d9488; --accent2:#06b6d4; --accent-ink:#ffffff; --soft:#e2f7f5; --teal:#0fb5a6;
+  --wa:#1fb35a; --wa2:#13a07f; --done:#e6f7f1; --done-ink:#0f8a62; --warn:#8a5a00; --warn-bg:#fff6e0; --red:#e5484d;
+  --shadow:0 1px 2px rgba(18,48,45,.05),0 8px 24px -12px rgba(18,48,45,.18);
+  --grad:linear-gradient(135deg,#0f766e 0%,#14b8a6 55%,#22d3ee 120%);
+  --f:"Noto Naskh Arabic","Traditional Arabic","Arial",serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0b1716; --surface:#11211f; --ink:#e6f6f4; --muted:#9dbbb7; --line:#1f3a37;
+  --accent:#2dd4bf; --accent2:#22d3ee; --accent-ink:#06201d; --soft:#123230; --teal:#3dd6c6;
+  --wa:#27c96a; --wa2:#1db38d; --done:#123328; --done-ink:#6fe0b3; --warn:#f5cd70; --warn-bg:#33290f; --red:#ff7a7e;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 30px -14px rgba(0,0,0,.6); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0b1716; --surface:#11211f; --ink:#e6f6f4; --muted:#9dbbb7; --line:#1f3a37;
+  --accent:#2dd4bf; --accent2:#22d3ee; --accent-ink:#06201d; --soft:#123230; --teal:#3dd6c6;
+  --wa:#27c96a; --wa2:#1db38d; --done:#123328; --done-ink:#6fe0b3; --warn:#f5cd70; --warn-bg:#33290f; --red:#ff7a7e;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 30px -14px rgba(0,0,0,.6); color-scheme:dark}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f);font-weight:600;direction:rtl;line-height:1.7;
+  background-image:radial-gradient(600px 300px at 100% -10%,rgba(20,184,166,.12),transparent 60%),radial-gradient(500px 260px at -10% 20%,rgba(34,211,238,.09),transparent 60%);
+  background-attachment:fixed;
+  padding-left:max(14px,env(safe-area-inset-left,0px));padding-right:max(14px,env(safe-area-inset-right,0px));padding-block:14px 56px}
+[hidden]{display:none!important}
+.wrap{max-width:620px;margin:0 auto;display:grid;gap:14px}
+
+/* hero */
+header.hero{position:relative;overflow:hidden;border-radius:24px;padding:18px 18px 16px;color:#fff;background:var(--grad);box-shadow:0 18px 40px -20px rgba(13,148,136,.65);display:grid;gap:14px}
+header.hero::before{content:"";position:absolute;inset:auto -60px -90px auto;width:220px;height:220px;border-radius:50%;background:rgba(255,255,255,.10)}
+header.hero::after{content:"";position:absolute;top:-70px;left:-40px;width:160px;height:160px;border-radius:50%;background:rgba(255,255,255,.07)}
+.hero .top{display:flex;align-items:center;gap:12px;position:relative;z-index:1}
+.logo{width:54px;height:54px;flex:none;border-radius:16px;background:rgba(255,255,255,.16);display:grid;place-items:center;backdrop-filter:blur(6px)}
+.logo svg{width:38px;height:38px}
+h1{margin:0;font-size:1.4rem;font-weight:700;line-height:1.3}
+.sub{margin:0;color:rgba(255,255,255,.82);font-size:.86rem;line-height:1.6}
+.installBtn{margin-inline-start:auto;white-space:nowrap;flex:none;background:rgba(255,255,255,.18);color:#fff;border:1px solid rgba(255,255,255,.35);padding:7px 12px;border-radius:999px;font-size:.85rem;backdrop-filter:blur(6px);position:relative;z-index:1}
+.resetBtn{white-space:nowrap;flex:none;display:inline-flex;align-items:center;gap:5px;background:#fff;color:#B3261E;border:0;padding:7px 12px;border-radius:999px;font-size:.85rem;font-weight:700;position:relative;z-index:1;box-shadow:0 4px 12px -6px rgba(0,0,0,.35);cursor:pointer}
+.installBtn:not([hidden])+.resetBtn{margin-inline-start:6px}.installBtn[hidden]+.resetBtn{margin-inline-start:auto}
+.resetBtn:active{transform:scale(.96)}
+.backFasli{order:-1;display:inline-flex;align-items:center;gap:2px;flex:none;background:rgba(255,255,255,.18);color:#fff;border:1px solid rgba(255,255,255,.35);padding:6px 10px 6px 12px;border-radius:999px;font-size:.85rem;font-weight:700;text-decoration:none;position:relative;z-index:1}
+.backFasli[hidden]{display:none}
+.prog{position:relative;z-index:1;display:grid;gap:6px}
+.prog .lbl{display:flex;justify-content:space-between;font-size:.82rem;color:rgba(255,255,255,.9)}
+.prog .track{height:8px;border-radius:99px;background:rgba(255,255,255,.22);overflow:hidden}
+.prog .track i{display:block;height:100%;width:0;border-radius:99px;background:linear-gradient(90deg,#fde68a,#fff);transition:width .35s ease}
+
+/* cards */
+section{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:16px;display:grid;gap:12px;min-width:0;box-shadow:var(--shadow)}
+h2{margin:0;font-size:1.06rem;font-weight:700;display:flex;align-items:center;gap:10px}
+h2 .n{flex:none;width:30px;height:30px;border-radius:10px;display:grid;place-items:center;background:var(--soft);color:var(--accent);font-size:.92rem;transition:background .2s,color .2s}
+h2 .end{margin-inline-start:auto;font-size:.85rem;color:var(--muted);font-weight:600}
+label{font-size:.88rem;color:var(--muted)}
+select,textarea,input[type=text],input[type=date]{width:100%;font:inherit;font-weight:600;color:var(--ink);background:var(--bg);border:1.5px solid var(--line);border-radius:14px;padding:11px 13px;transition:border-color .15s,box-shadow .15s;appearance:none;-webkit-appearance:none}
+select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%235f7f7b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-position:14px 50%;background-size:12px 8px;background-repeat:no-repeat;padding-left:36px}
+textarea{min-height:130px;resize:vertical;line-height:1.85}
+select:focus,textarea:focus,input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 18%,transparent)}
+button:focus-visible,a:focus-visible,h2[role=button]:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:12px}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.chk{display:flex;align-items:center;gap:8px;font-size:.9rem;color:var(--ink)}
+input[type=checkbox]{width:20px;height:20px;accent-color:var(--accent);flex:none}
+button,.btn{font:inherit;font-weight:700;border:0;border-radius:14px;padding:11px 16px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:6px;transition:transform .12s,filter .15s,box-shadow .15s}
+button:active,.btn:active{transform:scale(.98)}
+.primary{background:linear-gradient(135deg,var(--wa),var(--wa2));color:#fff;font-size:1.06rem;width:100%;padding:15px;box-shadow:0 12px 24px -12px rgba(31,179,90,.7)}
+.primary[aria-disabled=true]{opacity:.45;pointer-events:none}
+.ghost{background:var(--soft);color:var(--accent)}
+.small{padding:7px 13px;font-size:.86rem;border-radius:999px}
+.next{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;width:100%;padding:13px;box-shadow:0 12px 24px -14px rgba(13,148,136,.75)}
+
+/* groups */
+.groups{display:grid;gap:12px}.grade{display:grid;gap:6px}.grade b{font-size:.86rem;color:var(--muted)}
+.gg{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.g{display:flex;align-items:center;gap:8px;background:var(--bg);border:1.5px solid var(--line);border-radius:14px;padding:10px 12px;cursor:pointer;transition:border-color .15s,background .15s}
+.g.on{border-color:var(--accent);background:var(--soft);color:var(--accent)}
+.g span{flex:1;min-width:0;white-space:nowrap}.gg .g{padding:10px 8px;gap:6px}
+.g small{color:var(--muted);font-size:.78rem}
+.when{display:grid;grid-template-columns:1.6fr 1fr;gap:8px}
+.when>div{min-width:0}
+@media (max-width:420px){.when{grid-template-columns:1fr}}
+.hint{font-size:.85rem;color:var(--muted)}
+
+/* priority */
+.seg{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.seg button{background:var(--bg);border:1.5px solid var(--line);color:var(--ink);padding:10px 4px}
+.seg button[aria-pressed=true]{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border-color:transparent}
+.seg button[data-p="1"][aria-pressed=true]{background:linear-gradient(135deg,#f59e0b,#f97316)}
+.seg button.u[aria-pressed=true]{background:linear-gradient(135deg,#ef4444,#e11d48)}
+
+/* files */
+.drop{display:flex;flex-direction:column;align-items:center;gap:2px;border:2px dashed color-mix(in srgb,var(--accent) 35%,var(--line));border-radius:16px;padding:16px;cursor:pointer;color:var(--accent);font-weight:700;background:color-mix(in srgb,var(--soft) 55%,transparent)}
+.drop small{color:var(--muted);font-weight:600}
+.files{display:grid;gap:6px;margin-top:8px}
+.f{display:flex;align-items:center;gap:10px;background:var(--soft);border-radius:14px;padding:8px 10px}
+.f img{width:44px;height:44px;object-fit:cover;border-radius:10px;flex:none}
+.f .ic{width:44px;height:44px;border-radius:10px;background:var(--surface);display:grid;place-items:center;font-size:1.3rem;flex:none}
+.f span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.9rem}
+.f small{color:var(--muted);display:block;font-size:.78rem}
+.f button{background:none;color:var(--red);padding:4px 8px;font-size:1.1rem}
+.last{display:grid;gap:8px;background:var(--done);color:var(--done-ink);border-radius:14px;padding:12px 14px;font-size:.92rem}
+
+/* steps */
+.step{gap:0;transition:box-shadow .2s,border-color .2s}
+.step.open{border-color:color-mix(in srgb,var(--accent) 40%,var(--line));box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 8%,transparent),var(--shadow)}
+.step h2{cursor:pointer;user-select:none;white-space:nowrap;min-width:0}
+.step h2::after{content:"";flex:none;width:8px;height:8px;margin-inline-start:6px;border-left:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:rotate(-45deg) translateY(-2px);transition:transform .2s}
+.step.open h2::after{transform:rotate(135deg) translateY(-2px)}
+.step .sum{margin-inline-start:auto;font-size:.84rem;color:var(--muted);font-weight:600;flex:1;min-width:0;text-align:end;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.step.open h2 .n{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff}
+.step.done:not(.open) h2 .n{background:var(--done);color:var(--done-ink)}
+.step.done:not(.open) h2 .n{font-size:0}.step.done:not(.open) h2 .n::before{content:"✓";font-size:1rem}
+.step .body{display:none;gap:14px;margin-top:14px}
+.step.open .body{display:grid;animation:fin .25s ease}
+.fld{animation:fin .25s ease}@keyframes fin{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+
+/* preview & send */
+.preview{background:linear-gradient(180deg,#e8f8ef,#dcf3e6);color:#163a2a;border-radius:18px 18px 4px 18px;padding:14px 16px;white-space:pre-wrap;font-size:.95rem;overflow-wrap:anywhere;box-shadow:inset 0 0 0 1px rgba(15,138,98,.12)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .preview{background:#13322a;color:#d9f5e8}}
+:root[data-theme="dark"] .preview{background:#13322a;color:#d9f5e8}
+.note{background:var(--warn-bg);color:var(--warn);border-radius:14px;padding:10px 12px;font-size:.86rem;margin:0}
+.bar{height:8px;background:var(--line);border-radius:99px;overflow:hidden}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--wa),var(--teal));width:0;transition:width .3s}
+.chips{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.chip{background:var(--bg);border:1.5px solid var(--line);color:var(--ink);border-radius:14px;padding:10px 6px;font-size:.93rem}
+.chip.sent{background:var(--done);border-color:transparent;color:var(--done-ink)}
+.chip.sent::after{content:" ✓"}
+
+/* nav, people, undo */
+.nav{display:flex;gap:8px}.nav .prev{flex:1;background:var(--soft);color:var(--accent);padding:13px}.nav .next{flex:2;width:auto}
+.seg.two{grid-template-columns:repeat(2,1fr)}
+#pSearch{width:100%;font:inherit;font-weight:700;padding:11px 14px;border:1.5px solid var(--line);border-radius:14px;background:var(--bg);color:var(--ink)}
+.pgrid{display:grid;gap:8px}.prow{display:flex;gap:6px;align-items:stretch}.prow .g{flex:1;min-width:0}.prow .g span{white-space:normal}
+.prow .g small{display:inline-block;direction:ltr;unicode-bidi:isolate;margin-inline-start:6px}
+.xbtn{background:none;color:var(--red);border:1.5px solid var(--line);border-radius:14px;padding:0 12px;font-size:1.05rem;flex:none}
+.addp{display:grid;gap:8px;border-top:1px dashed var(--line);padding-top:12px}
+.phone{direction:ltr;text-align:right}
+#chipsP{grid-template-columns:repeat(2,1fr)}
+.tools{position:relative;z-index:1;display:flex}
+.undoBtn{background:rgba(255,255,255,.18);color:#fff;border:1px solid rgba(255,255,255,.35);padding:6px 14px;border-radius:999px;font-size:.85rem;font-weight:700;backdrop-filter:blur(6px)}
+
+/* misc */
+details{padding-top:2px}
+summary{cursor:pointer;color:var(--accent);font-weight:700}
+.log{display:grid;gap:8px}
+.log .it{background:var(--bg);border:1px solid var(--line);border-radius:14px;padding:10px 12px;display:grid;gap:4px;font-size:.9rem}
+.log .it b{font-size:.95rem}
+.log .meta{color:var(--muted);font-size:.8rem}
+.toast{position:fixed;bottom:calc(20px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:999px;font-size:.9rem;z-index:30;box-shadow:0 10px 30px -10px rgba(0,0,0,.4);max-width:calc(100% - 32px);text-align:center}
+footer{text-align:center;color:var(--muted);font-size:.8rem}
+
+/* install sheet */
+.scrim{position:fixed;inset:0;background:rgba(6,24,22,.45);backdrop-filter:blur(3px);z-index:20;display:flex;align-items:flex-end;justify-content:center;animation:fade .2s ease}
+.sheet{width:100%;max-width:520px;background:var(--surface);border-radius:26px 26px 0 0;padding:10px 20px calc(22px + env(safe-area-inset-bottom,0px));display:grid;gap:14px;box-shadow:0 -20px 40px -20px rgba(0,0,0,.35);animation:up .28s cubic-bezier(.2,.8,.2,1)}
+.sheet .grab{width:44px;height:5px;border-radius:9px;background:var(--line);margin:0 auto 4px}
+.sheet .head{display:flex;align-items:center;gap:12px}
+.sheet .head img{width:58px;height:58px;border-radius:16px;box-shadow:var(--shadow)}
+.sheet h3{margin:0;font-size:1.15rem}
+.sheet p{margin:0;color:var(--muted);font-size:.9rem}
+.perks{display:grid;gap:8px;margin:0;padding:0;list-style:none}
+.perks li{display:flex;gap:10px;align-items:center;font-size:.92rem;background:var(--bg);border-radius:12px;padding:8px 12px}
+.ios{display:grid;gap:8px;counter-reset:s;margin:0;padding:0;list-style:none}
+.ios li{display:flex;gap:10px;align-items:center;font-size:.92rem;background:var(--bg);border-radius:12px;padding:9px 12px}
+.ios li::before{counter-increment:s;content:counter(s,arabic-indic);flex:none;width:24px;height:24px;border-radius:8px;display:grid;place-items:center;background:var(--soft);color:var(--accent);font-size:.85rem}
+.ios .sh{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:7px;background:var(--soft);color:#0a84ff}
+.sheet .acts{display:grid;grid-template-columns:2fr 1fr;gap:8px}
+@keyframes up{from{transform:translateY(100%)}to{transform:none}}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <div class="top">
+      <div class="logo" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none"><rect x="11" y="9" width="26" height="33" rx="5" fill="#fff"/><rect x="18" y="5.5" width="12" height="7" rx="2.5" fill="#fde68a"/><path d="M16 22l3 3 5-6M16 32l3 3 5-6" stroke="#0d9488" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M27 22.5h5M27 32.5h5" stroke="#06b6d4" stroke-width="2.6" stroke-linecap="round"/></svg></div>
+      <div>
+        <h1>ساعي</h1>
+        <p class="sub">يوصل مهام المعلمين لقروبات أولياء الأمور<br>ابتدائية القادسية</p>
+      </div>
+      <button class="installBtn" id="installBtn" type="button" hidden>📲 تثبيت</button>
+      <a class="backFasli" id="backFasli" href="../" hidden aria-label="رجوع إلى فصلي"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg><span>فصلي</span></a>
+      <button class="resetBtn" id="resetBtn" type="button" title="تصفير الاختيارات" aria-label="تصفير الاختيارات والبدء من جديد"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg><span>تصفير</span></button>
+    </div>
+    <div class="tools" id="tools" hidden><button class="undoBtn" id="undoBtn" type="button" aria-label="تراجع عن آخر إجراء">↩ تراجع <span id="undoLbl"></span></button></div>
+    <div class="prog" aria-live="polite">
+      <div class="lbl"><span id="progLbl">الخطوة ١ من ٥</span><span id="progName"></span></div>
+      <div class="track"><i id="progBar"></i></div>
+    </div>
+  </header>
+
+  <section class="step" id="s-teacher">
+    <h2 tabindex="0" role="button"><span class="n">١</span> المعلم <span class="sum"></span></h2>
+    <div class="body">
+      <select id="teacher"><option value="" disabled selected>اختر اسمك…</option></select>
+      <p class="hint" id="noTeachers" hidden>أضف أسماء المعلمين من «الإعدادات» أسفل الصفحة.</p>
+    </div>
+  </section>
+
+  <section class="step" id="s-task">
+    <h2 tabindex="0" role="button"><span class="n">٢</span> المهمة <span class="sum"></span></h2>
+    <div class="body">
+      <div>
+        <label for="tpl">نوع المهمة</label>
+        <select id="tpl"></select>
+      </div>
+      <div id="f-text" class="fld">
+        <label for="msg">نص المهمة</label>
+        <textarea id="msg" placeholder="اكتب المطلوب من الطالب…"></textarea>
+      </div>
+      <div id="f-prio" class="fld">
+        <label>الأهمية</label>
+        <div class="seg" id="prio">
+          <button type="button" data-p="0" aria-pressed="false">عادية</button>
+          <button type="button" data-p="1" aria-pressed="false">مهمة</button>
+          <button type="button" data-p="2" class="u" aria-pressed="false">عاجلة</button>
+        </div>
+      </div>
+      <div id="f-file" class="fld">
+        <label>إرفاق ملف (اختياري) — صورة أو PDF أو ورقة عمل</label>
+        <label class="drop" for="file"><span>📎 اضغط لاختيار ملف</span><small>حتى ٥ ملفات</small></label>
+        <input type="file" id="file" multiple accept="image/*,application/pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx" hidden>
+        <div class="files" id="files"></div>
+      </div>
+      <div class="nav"><button class="btn prev" type="button" data-prev="s-task">السابق</button><button class="btn next" id="f-next" type="button" data-next="s-task">التالي: اختيار المستلمين</button></div>
+    </div>
+  </section>
+
+  <section class="step" id="s-groups">
+    <h2 tabindex="0" role="button"><span class="n">٣</span> المستلمون <span class="sum"></span></h2>
+    <div class="body">
+      <div class="seg two" id="rtabs">
+        <button type="button" data-tab="g" aria-pressed="true">القروبات</button>
+        <button type="button" data-tab="p" aria-pressed="false">الأفراد</button>
+      </div>
+      <div id="tab-g" style="display:grid;gap:12px">
+        <div class="row">
+          <button class="ghost small" id="all" type="button">تحديد الكل</button>
+          <button class="ghost small" id="none" type="button">إلغاء التحديد</button>
+          <span class="hint" id="gcount" style="margin-inline-start:auto"></span>
+        </div>
+        <div class="groups" id="groups"></div>
+      </div>
+      <div id="tab-p" style="display:grid;gap:12px" hidden>
+        <div class="row">
+          <button class="ghost small" id="pAll" type="button">تحديد الكل</button>
+          <button class="ghost small" id="pNone" type="button">إلغاء التحديد</button>
+          <span class="hint" id="pcount" style="margin-inline-start:auto"></span>
+        </div>
+        <input type="search" id="pSearch" placeholder="🔍 ابحث بالاسم أو الرقم…" autocomplete="off" enterkeyhint="search">
+        <p class="hint" id="pFound" hidden></p>
+        <details class="addp" id="addBox">
+          <summary style="cursor:pointer;font-weight:900;color:var(--navy)">＋ إضافة اسم فردي (ولي أمر)</summary>
+          <div style="display:grid;gap:10px;margin-top:10px">
+            <input type="text" id="pName" placeholder="الاسم — مثال: ولي أمر الطالب أحمد">
+            <input type="text" class="phone" id="pPhone" inputmode="tel" placeholder="05XXXXXXXX">
+            <button class="ghost" id="pAdd" type="button">إضافة وتحديد</button>
+            <p class="hint">يُحفظ الرقم على هذا الجهاز فقط لاستخدامه لاحقًا، ويمكنك حذفه بزر ✕.</p>
+          </div>
+        </details>
+        <p class="hint" id="noP" hidden>لم تُضف أفرادًا بعد. أضف رقم ولي الأمر من الأسفل.</p>
+        <div class="pgrid" id="people"></div>
+        <div class="addp">
+          <label>رفع قائمة أسماء من ملف</label>
+          <label class="drop" for="pFile"><span>📎 اختر ملف Excel أو CSV أو نص</span><small>عمودان: الاسم ثم رقم الجوال</small></label>
+          <input type="file" id="pFile" accept=".csv,.txt,.xlsx,.xls,text/csv,text/plain" hidden>
+        </div>
+        <div class="addp">
+          <label for="pPaste">أو الصق الأسماء هنا (من Excel أو واتساب أو أي مكان)</label>
+          <textarea id="pPaste" style="min-height:90px" placeholder="أحمد محمد	0501234567&#10;خالد علي | 0555555555&#10;0509998877"></textarea>
+          <button class="ghost" id="pPasteAdd" type="button">إضافة الأسماء الملصوقة</button>
+        </div>
+      </div>
+      <div class="nav"><button class="btn prev" type="button" data-prev="s-groups">السابق</button><button class="btn next" type="button" data-next="s-groups">التالي</button></div>
+    </div>
+  </section>
+
+  <section class="step" id="whenSec">
+    <h2 tabindex="0" role="button"><span class="n">٤</span> التاريخ والوقت <span class="sum"></span></h2>
+    <div class="body">
+      <div class="when">
+        <div><label for="dt">اليوم والتاريخ (هجري)</label><select id="dt"></select></div>
+        <div><label for="tm">الوقت</label><select id="tm"></select></div>
+      </div>
+      <div>
+        <label for="whenLbl">يُكتب في الرسالة باسم</label>
+        <select id="whenLbl"><option>موعد التسليم</option><option>موعد الاختبار</option><option>الموعد</option><option>اليوم الدراسي</option></select>
+      </div>
+      <div class="nav"><button class="btn prev" type="button" data-prev="whenSec">السابق</button><button class="btn next" type="button" data-next="whenSec">التالي: المعاينة والإرسال</button></div>
+    </div>
+  </section>
+
+  <section class="step" id="s-send">
+    <h2 tabindex="0" role="button"><span class="n">٥</span> المعاينة والإرسال <span class="sum"></span></h2>
+    <div class="body">
+      <div class="preview" id="pv"></div>
+      <label class="chk"><input type="checkbox" id="emo" checked> الرموز التعبيرية</label>
+      <a class="btn primary" id="share" href="#" target="_blank" rel="noopener">إرسال عبر واتساب</a>
+      <p class="note" id="fileNote" hidden>مع الملف: يُنسخ نص المهمة تلقائيًا ثم تفتح قائمة المشاركة. اختر واتساب ثم القروبات. إذا ظهر الملف بدون النص، الصق النص في خانة التعليق.</p>
+      <p class="note">واتساب لا يسمح لأي موقع بالإرسال الآلي للقروبات. بعد الضغط تفتح قائمة المحادثات: حدّد القروبات (حتى ٥ في كل مرة) ثم أرسل. أو اضغط اسم القروب بالأسفل لنسخ المهمة وفتحه مباشرة إن أضفت رابطه.</p>
+      <div class="last" id="lastBox" hidden>
+        <span>✅ أُرسلت المهمة ومُسحت من المربع. لإرسالها لقروبات أخرى:</span>
+        <button class="ghost" id="resend" type="button">إرسال المهمة السابقة مرة أخرى</button>
+      </div>
+      <div class="hint" id="cnt"></div>
+      <div class="bar"><i id="bar"></i></div>
+      <div class="chips" id="chips"></div>
+      <div class="hint" id="pLbl" hidden>الأفراد — اضغط الاسم ليُفتح واتساب على محادثته والمهمة جاهزة فيها</div>
+      <div class="chips" id="chipsP"></div>
+      <div class="row">
+        <button class="ghost" id="copy" type="button">نسخ المهمة</button>
+      </div>
+      <div class="nav"><button class="btn prev" type="button" data-prev="s-send">السابق</button></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>سجل المهام <span class="end" id="logn"></span></h2>
+    <div class="log" id="log"></div>
+  </section>
+
+  <section>
+    <details id="setup">
+      <summary>الإعدادات (المعلمون والقروبات والأفراد)</summary>
+      <div style="display:grid;gap:12px;margin-top:10px">
+        <div>
+          <label for="tList">المعلمون — معلم في كل سطر، ويمكن كتابة المادة بعد علامة |</label>
+          <textarea id="tList"></textarea>
+        </div>
+        <div>
+          <label for="gList">قروبات الفصول — قروب في كل سطر، ويمكن إضافة رابط الدعوة بعد علامة |</label>
+          <textarea id="gList" placeholder="رابع أ | https://chat.whatsapp.com/..."></textarea>
+        </div>
+        <div>
+          <label for="pList">الأفراد — فرد في كل سطر: الاسم | رقم الجوال (٠٥XXXXXXXX). ويمكنك لصق عمودين مباشرة من Excel</label>
+          <textarea id="pList" placeholder="ولي أمر الطالب أحمد | 0501234567"></textarea>
+        </div>
+        <div>
+          <label for="sender">اسم المدرسة أسفل الرسالة</label>
+          <input type="text" id="sender">
+        </div>
+        <button class="ghost" id="save" type="button">حفظ الإعدادات</button>
+        <button class="ghost" id="shareCfg" type="button">نسخ رابط جاهز بالأسماء للزملاء</button>
+        <p class="hint">تُحفظ الإعدادات على هذا الجهاز فقط. «الرابط الجاهز» يفتح الصفحة عند زملائك بنفس الأسماء والقروبات دون إدخالها من جديد، ولا يتضمّن أرقام الأفراد حمايةً لخصوصيتهم.</p>
+      </div>
+    </details>
+  </section>
+
+  <footer>تصميم: أ. عبدالله ال عواد · الإصدار ٢٦</footer>
+</div>
+<div class="scrim" id="installSheet" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="insT">
+    <div class="grab"></div>
+    <div class="head"><img src="icon-192.png" alt=""><div><h3 id="insT">ثبّت «ساعي» على جوالك</h3><p>افتحه بلمسة من الشاشة الرئيسية مثل أي تطبيق</p></div></div>
+    <ul class="perks" id="insPerks">
+      <li>⚡ يفتح مباشرة من أيقونة على الشاشة</li>
+      <li>👤 يتذكر اسمك واختياراتك دائمًا</li>
+      <li>📶 يعمل حتى مع ضعف الإنترنت</li>
+    </ul>
+    <ol class="ios" id="insIos" hidden>
+      <li>اضغط زر المشاركة <span class="sh">⬆︎</span> أسفل سفاري</li>
+      <li>اختر «إضافة إلى الشاشة الرئيسية»</li>
+      <li>اضغط «إضافة» أعلى الشاشة</li>
+    </ol>
+    <p class="hint" id="insOr" hidden>إذا لم تظهر نافذة التثبيت بعد الضغط، ثبّته يدويًا:</p>
+    <ol class="ios" id="insAnd" hidden>
+      <li>اضغط زر القائمة <span class="sh" style="color:var(--ink)">⋮</span> أعلى متصفح كروم</li>
+      <li>اختر «تثبيت التطبيق» أو «إضافة إلى الشاشة الرئيسية»</li>
+      <li>اضغط «تثبيت» أو «إضافة» للتأكيد</li>
+    </ol>
+    <p class="hint" id="insSam" hidden>في متصفح سامسونج: اضغط ☰ أسفل الشاشة ثم «إضافة صفحة إلى» ثم «الشاشة الرئيسية».</p>
+    <div class="acts">
+      <button class="next" id="insGo" type="button">تثبيت الآن</button>
+      <button class="ghost" id="insLater" type="button">لاحقًا</button>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+const $=id=>document.getElementById(id);
+const ck={get(k){const m=document.cookie.match(new RegExp("(?:^|; )"+k+"=([^;]*)"));return m?decodeURIComponent(m[1]):""},set(k,v){try{document.cookie=k+"="+encodeURIComponent(v)+"; max-age=31536000; path=/; SameSite=Lax"}catch(e){}}};
+const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+const ar=x=>String(x).replace(/[0-9]/g,d=>"٠١٢٣٤٥٦٧٨٩"[d]);
+const pad=n=>String(n).padStart(2,"0");
+const en=x=>String(x).replace(/[٠-٩]/g,d=>"٠١٢٣٤٥٦٧٨٩".indexOf(d)).replace(/[۰-۹]/g,d=>"۰۱۲۳۴۵۶۷۸۹".indexOf(d));
+function normPhone(x){let d=en(x).replace(/\D/g,"");if(d.startsWith("00"))d=d.slice(2);if(/^05\d{8}$/.test(d))return "966"+d.slice(1);if(/^5\d{8}$/.test(d))return "966"+d;if(/^9665\d{8}$/.test(d))return d;if(/^\d{11,15}$/.test(d)&&!d.startsWith("966"))return d;return ""}
+const DIG="0-9٠-٩۰-۹";
+function parseLines(text){
+  const list=[];let bad=0;
+  String(text).split(/\r?\n/).map(z=>z.trim()).filter(Boolean).forEach(z=>{
+    if(!new RegExp("["+DIG+"]").test(z))return;
+    const tk=z.split(/[|\t;,]/).map(x=>x.trim()).filter(Boolean);
+    let ph="",pi=-1;
+    tk.forEach((x,i)=>{if(!ph){const v=normPhone(x);if(v){ph=v;pi=i}}});
+    if(!ph){bad++;return}
+    const rest=tk.filter((x,i)=>i!==pi&&!new RegExp("^[+\\-()\\s"+DIG+"]+$").test(x));
+    const inTok=tk[pi].replace(new RegExp("[+\\-()\\s"+DIG+"]+","g")," ").trim();
+    const n=[...rest,inTok].filter(Boolean).join(" ").trim();
+    if(!list.some(q=>q[1]===ph))list.push([n,ph]);
+  });
+  return {list,bad};
+}
+const pLabel=q=>q[0]||("رقم "+q[1]);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const DAYS=["الأحد","الإثنين","الثلاثاء","الأربعاء","الخميس","الجمعة","السبت"];
+const GRADES=[["أول",["أ","ب"]],["ثاني",["أ","ب","ج"]],["ثالث",["أ","ب","ج"]],["رابع",["أ","ب","ج"]],["خامس",["أ","ب","ج"]],["سادس",["أ","ب","ج"]]];
+const DEF={
+  t:["الأستاذ محمد بن يسارى | مدير المدرسة","الأستاذ عايض عبيد | وكيل المدرسة لشؤون المعلمين","الأستاذ عمر الأسمري | وكيل المدرسة لشؤون الطلاب","الأستاذ مسفر محمد | المرشد الطلابي","الأستاذ احمد ابوهاشم | رائد النشاط الطلابي","الأستاذ إبراهيم فايع","الأستاذ احمد الهاشمي", "الأستاذ حسن عبود", "الأستاذ حسين ال عريج", "الأستاذ رياض طه", "الأستاذ سعيد الاسمري", "الأستاذ سعيد محيا", "الأستاذ عامر العمري", "الأستاذ عايض محمد", "الأستاذ عبدالرحمن القحطاني", "الأستاذ عبدالرحمن محمد", "الأستاذ عبدالكريم حنبص", "الأستاذ عبدالله العواد", "الأستاذ عبدالله مطلق", "الأستاذ عبدالوهاب عسيري", "الأستاذ علي ظافر", "الأستاذ محمد أحمد", "الأستاذ محمد الحرملي", "الأستاذ محمد العمري", "الأستاذ محمد قاسم", "الأستاذ محمد مشبب", "الأستاذ محمد موسى", "الأستاذ مداوي حسن", "الأستاذ معتق محمد", "الأستاذ نايف سعيد", "الأستاذ سعيد يحى", "الأستاذ سلطان الفيفي", "الأستاذ شريف عبده", "الأستاذ احمد عوضه", "الأستاذ سعيد محمد", "الأستاذ سعيد الساقطي"],
+  g:GRADES.flatMap(([g,x])=>x.map(c=>[g+" "+c,""])),
+  s:"ابتدائية القادسية"
+};
+const TPL={
+  "واجب منزلي":"حل الواجب في كتاب الطالب صفحة: ",
+  "اختبار قصير":"اختبار قصير في درس: \nنأمل مراجعة الدرس مع الطالب.",
+  "مراجعة للاختبار":"نأمل مراجعة الدروس التالية مع الطالب استعدادًا للاختبار:\n",
+  "أدوات مطلوبة":"نأمل إحضار الأدوات التالية: ",
+  "مشروع / بحث":"تسليم مشروع / بحث بعنوان: ",
+  "واجب منصة مدرستي":"حل الواجب المنشور في منصة مدرستي لدرس: ",
+  "تقرير يوم دراسي":"",
+  "مهمة عامة":""
+};
+const GEN=t=>t==="مهمة عامة"||t==="تنبيه عام";
+const nm=t=>t.split("|")[0].trim(), sub=t=>(t.split("|")[1]||"").trim();
+
+/* ---------- config ---------- */
+let cfg=store.get("p_cfg",null)||DEF;
+if(cfg.t.length<=1||((cfg.t.length===30||cfg.t.length===31)&&!cfg.t.some(t=>t.includes("مدير المدرسة")))||cfg.t.some(t=>t.includes("مسفر المسفر"))||(cfg.t.length>30&&!cfg.t.some(t=>t.includes("الساقطي"))))cfg.t=DEF.t.slice();
+if(!Array.isArray(cfg.p))cfg.p=[];
+(function importFromHash(){
+  const m=location.hash.match(/^#c=(.+)$/);if(!m)return;
+  try{
+    const c=JSON.parse(decodeURIComponent(escape(atob(m[1].replace(/-/g,"+").replace(/_/g,"/")))));
+    if(Array.isArray(c.t)&&Array.isArray(c.g)){cfg={t:c.t,g:c.g,s:c.s||DEF.s,p:Array.isArray(cfg.p)?cfg.p:[]};store.set("p_cfg",cfg);setTimeout(()=>toast("تم تحميل المعلمين والقروبات"),300)}
+  }catch(e){}
+  history.replaceState(null,"",location.pathname);
+})();
+
+let picked=store.get("p_picked",[]), sent=store.get("p_sent",[]), prio=-1, log=store.get("p_log",[]), pickedP=store.get("p_pickedP",[]), sentP=store.get("p_sentP",[]);
+
+function fillTeachers(){
+  const s=$("teacher"),cur=store.get("p_teacher","")||ck.get("p_teacher");s.innerHTML='<option value="" disabled>اختر اسمك…</option>';s.value="";
+  cfg.t.forEach(t=>{const o=document.createElement("option");o.value=t;o.textContent=nm(t)+(sub(t)?" — "+sub(t):"");s.appendChild(o)});
+  if(cfg.t.includes(cur))s.value=cur;
+  $("noTeachers").hidden=cfg.t.length>1;
+}
+function fillGroups(){
+  const box=$("groups");box.innerHTML="";
+  picked=picked.filter(n=>cfg.g.some(g=>g[0]===n));
+  const sections=[];
+  cfg.g.forEach((g,i)=>{const k=g[0].split(" ")[0];let sec=sections.find(x=>x.k===k);if(!sec){sec={k,items:[]};sections.push(sec)}sec.items.push([g,i])});
+  sections.forEach(sec=>{
+    const d=document.createElement("div");d.className="grade";
+    const multi=sec.items.length>1;
+    d.innerHTML=multi?"<b>الصف ال"+esc(sec.k)+"</b>":"";
+    const w=document.createElement("div");w.className="gg";
+    sec.items.forEach(([[name,link],i])=>{
+      const l=document.createElement("label");l.className="g"+(picked.includes(name)?" on":"");
+      l.innerHTML='<input type="checkbox" id="gc'+i+'"'+(picked.includes(name)?" checked":"")+'><span>'+esc(name)+(link?' <small>🔗</small>':'')+'</span>';
+      l.querySelector("input").onchange=e=>{
+        pushUndo("تحديد القروب");picked=e.target.checked?[...picked,name]:picked.filter(x=>x!==name);
+        store.set("p_picked",picked);fillGroups();renderSend();
+      };
+      w.appendChild(l);
+    });
+    d.appendChild(w);box.appendChild(d);
+  });
+  $("gcount").textContent=ar(picked.length)+" من "+ar(cfg.g.length);
+}
+function nrm(s){return String(s||"").replace(/[ً-ْـ]/g,"").replace(/[أإآ]/g,"ا").replace(/ة/g,"ه").replace(/ى/g,"ي").replace(/[٠-٩]/g,d=>"٠١٢٣٤٥٦٧٨٩".indexOf(d)).replace(/\s+/g," ").trim().toLowerCase()}
+function visP(){const qs=nrm(($("pSearch")||{}).value||"");const P=cfg.p||[];return (qs?P.filter(q=>nrm(pLabel(q)+" "+q[1]).includes(qs)):P).map(q=>q[1])}
+function fillPeople(){
+  const box=$("people");box.innerHTML="";
+  const P=cfg.p||[];
+  pickedP=pickedP.filter(x=>P.some(q=>q[1]===x));
+  $("noP").hidden=P.length>0;
+  const qs=nrm(($("pSearch")||{}).value||"");
+  const shown=qs?P.filter(q=>nrm(pLabel(q)+" "+q[1]).includes(qs)):P;
+  const fd=$("pFound");if(fd){fd.hidden=!qs;fd.textContent=shown.length?("نتائج البحث: "+ar(shown.length)+" من "+ar(P.length)):"لا توجد نتائج مطابقة"}
+  shown.forEach(q=>{
+    const on=pickedP.includes(q[1]),row=document.createElement("div");row.className="prow";
+    const l=document.createElement("label");l.className="g"+(on?" on":"");
+    l.innerHTML='<input type="checkbox"'+(on?" checked":"")+'><span>'+esc(pLabel(q))+' <small>'+esc(q[1])+'</small></span>';
+    l.querySelector("input").onchange=e=>{
+      pushUndo("تحديد فرد");
+      pickedP=e.target.checked?[...pickedP,q[1]]:pickedP.filter(x=>x!==q[1]);
+      store.set("p_pickedP",pickedP);fillPeople();renderSend();
+    };
+    const x=document.createElement("button");x.type="button";x.className="xbtn";x.textContent="✕";x.setAttribute("aria-label","حذف "+pLabel(q));
+    x.onclick=()=>{
+      pushUndo("حذف "+pLabel(q));
+      cfg.p=cfg.p.filter(z=>z[1]!==q[1]);pickedP=pickedP.filter(z=>z!==q[1]);sentP=sentP.filter(z=>z!==q[1]);
+      store.set("p_cfg",cfg);store.set("p_pickedP",pickedP);store.set("p_sentP",sentP);
+      fillPeople();fillSetup();renderSend();
+    };
+    row.append(l,x);box.appendChild(row);
+  });
+  $("pcount").textContent=ar(pickedP.length)+" من "+ar(P.length);
+}
+function fillSetup(){
+  $("tList").value=cfg.t.join("\n");
+  $("gList").value=cfg.g.map(([n,l])=>l?n+" | "+l:n).join("\n");
+  $("sender").value=cfg.s;
+  $("pList").value=(cfg.p||[]).map(([n,ph])=>n?n+" | "+ph:ph).join("\n");
+}
+
+/* ---------- date & time ---------- */
+function hijriParts(date){
+  const P={};
+  new Intl.DateTimeFormat("ar-SA-u-ca-islamic-umalqura-nu-latn",{day:"numeric",month:"numeric",year:"numeric"}).formatToParts(date).forEach(x=>P[x.type]=x.value);
+  const M={};
+  new Intl.DateTimeFormat("ar-SA-u-ca-islamic-umalqura-nu-latn",{month:"long"}).formatToParts(date).forEach(x=>M[x.type]=x.value);
+  return {d:P.day,m:P.month,y:P.year.replace(/\D/g,""),mn:M.month||""};
+}
+(function initWhen(){
+  const now=new Date(),base=new Date(now.getFullYear(),now.getMonth(),now.getDate(),12);
+  for(let i=0;i<=120;i++){
+    const dt=new Date(base);dt.setDate(base.getDate()+i);
+    const h=hijriParts(dt),o=document.createElement("option");
+    o.value=dt.getFullYear()+"-"+pad(dt.getMonth()+1)+"-"+pad(dt.getDate());
+    o.textContent=(i===0?"اليوم ":i===1?"غدًا ":"")+DAYS[dt.getDay()]+" "+ar(h.d)+" "+h.mn+" "+ar(h.y)+"هـ";
+    $("dt").appendChild(o);
+  }
+  for(let m=6*60;m<=22*60;m+=5){
+    const h=Math.floor(m/60),mi=m%60,o=document.createElement("option");
+    o.value=pad(h)+":"+pad(mi);o.textContent=ar((h%12||12)+":"+pad(mi))+" "+(h<12?"صباحًا":"مساءً");
+    $("tm").appendChild(o);
+  }
+  $("tm").value=store.get("p_tm","07:00");
+  $("whenLbl").value=store.get("p_wl","موعد التسليم");
+})();
+function whenInfo(){
+  const v=$("dt").value;if(!v)return null;
+  const [y,mo,d]=v.split("-").map(Number),date=new Date(y,mo-1,d,12),S="\u200F/\u200F";
+  const h=hijriParts(date),hj="\u200F"+h.d+S+h.m+S+h.y+"هـ",t=$("tm").options[$("tm").selectedIndex];
+  return {day:DAYS[date.getDay()],hj,date:hj,time:t?t.textContent:""};
+}
+const GREET="السلام عليكم ورحمة الله وبركاته\n";
+const bodyOf=()=>{const b=$("msg").value.trim();return b===GREET.trim()?"":b};
+let last=null;
+const current=()=>full()||(last?last.t:"");
+function full(){
+  const E=$("emo").checked,e=s=>E?s+" ":"";
+  const body=bodyOf();if(!body||!$("tpl").value)return "";
+  const w=whenInfo(),t0=$("teacher").value||"",type=$("tpl").value;
+  const head=prio==2?e("🔴")+"*تنبيه عاجل*":prio==1?e("🟠")+"*تنبيه مهم*":(type==="تقرير يوم دراسي"?e("📋"):e("📚"))+"*"+(GEN(type)?"تنبيه من معلم المادة":type)+"*";
+  let t=head+(prio&&!GEN(type)?" — "+type:"")+"\n\n";
+  t+=body+"\n";
+  const REP=type==="تقرير يوم دراسي";
+  if(w&&!GEN(type)) t+="\n"+e(REP?"🗓️":"⏰")+"*"+$("whenLbl").value+":*\n"+"اليوم: "+w.day+"\nالتاريخ: "+w.date+(REP?"":"\nالوقت: "+w.time)+"\n";
+  t+="\nشاكرين تعاونكم "+(E?"🌹":"")+"\n";
+  if(t0) t+="\n"+(sub(t0)?(/^(مدير|وكيل|المرشد|رائد)/.test(sub(t0))?sub(t0):"معلم "+sub(t0))+": ":"المعلم: ")+nm(t0);
+  if(cfg.s.trim()) t+="\n"+cfg.s.trim();
+  return ar(t.trim());
+}
+function render(){
+  $("whenSec").hidden=GEN($("tpl").value);
+  const hasT=!!$("tpl").value, hasB=hasT&&!!bodyOf(), hasP=hasB&&prio>=0;
+  $("f-text").hidden=!hasT; $("f-prio").hidden=!hasB; $("f-file").hidden=!hasP; $("f-next").hidden=!hasP;
+  if(typeof updateSteps==="function"&&$("s-teacher").querySelector(".sum"))try{updateSteps()}catch(e){}
+  const w=whenInfo();
+  const t=full();
+  $("pv").textContent=t||"اكتب المهمة لتظهر المعاينة هنا…";
+  $("share").href=t?"https://wa.me/?text="+encodeURIComponent(t):"#";
+  $("share").setAttribute("aria-disabled",t?"false":"true");
+  $("lastBox").hidden=!(last&&!t);
+  store.set("p_msg",$("msg").value);store.set("p_teacher",$("teacher").value);store.set("p_tm",$("tm").value);store.set("p_wl",$("whenLbl").value);
+}
+function renderSend(){
+  const c=$("chips");c.innerHTML="";
+  sent=sent.filter(n=>picked.includes(n));
+  sentP=sentP.filter(n=>pickedP.includes(n));
+  picked.forEach(name=>{
+    const link=(cfg.g.find(g=>g[0]===name)||[])[1]||"",b=document.createElement("button");
+    b.type="button";b.className="chip"+(sent.includes(name)?" sent":"");b.textContent=name;
+    b.onclick=async()=>{
+      if(!sent.includes(name)){ if(!current()){toast("اكتب المهمة أولًا");return} await copy(); if(link) window.open(link,"_blank"); }
+      pushUndo("تعليم الإرسال");
+      sent=sent.includes(name)?sent.filter(x=>x!==name):[...sent,name];store.set("p_sent",sent);renderSend();
+    };
+    c.appendChild(b);
+  });
+  const cp=$("chipsP");cp.innerHTML="";$("pLbl").hidden=!pickedP.length;
+  pickedP.forEach(ph=>{
+    const person=(cfg.p||[]).find(q=>q[1]===ph)||["",ph],b=document.createElement("button");
+    b.type="button";b.className="chip"+(sentP.includes(ph)?" sent":"");b.textContent=pLabel(person);
+    b.onclick=()=>{
+      if(!sentP.includes(ph)){
+        const t=current();if(!t){toast("اكتب المهمة أولًا");return}
+        window.open("https://wa.me/"+ph+"?text="+encodeURIComponent(t),"_blank");
+        if((last&&last.files&&last.files.length)||files.length)toast("فُتحت المحادثة بالنص — أرفق الملف من زر 📎 في واتساب");
+      }
+      pushUndo("تعليم الإرسال");
+      sentP=sentP.includes(ph)?sentP.filter(x=>x!==ph):[...sentP,ph];store.set("p_sentP",sentP);renderSend();
+    };
+    cp.appendChild(b);
+  });
+  const n=picked.length+pickedP.length,sn=sent.length+sentP.length;
+  $("cnt").textContent=n?"أُرسلت إلى "+ar(sn)+" من "+ar(n)+" — اضغط الاسم بعد الإرسال لتعليمه":"حدّد المستلمين من الخطوة ٣";
+  $("bar").style.width=(n?sn/n*100:0)+"%";
+  if(n&&sn===n) toast("وصلت المهمة لجميع المستلمين المحددين");
+  try{updateSteps()}catch(e){}
+}
+function renderLog(){
+  const L=$("log");L.innerHTML="";
+  $("logn").textContent=log.length?ar(log.length):"";
+  if(!log.length){L.innerHTML='<p class="hint">تظهر هنا المهام المرسلة لإعادة استخدامها.</p>';return}
+  log.forEach((it,i)=>{
+    const d=document.createElement("div");d.className="it";
+    d.innerHTML="<b>"+esc(it.type)+" · "+esc(nm(it.who))+"</b><div>"+esc(it.body.length>90?it.body.slice(0,90)+"…":it.body)+"</div><div class='meta'>"+esc(ar(GEN(it.type)?"":it.when))+" · "+esc(ar(it.groups.length))+" قروبات"+(it.people&&it.people.length?" · "+esc(ar(it.people.length))+" أفراد":"")+"</div>";
+    const r=document.createElement("div");r.className="row";
+    const u=document.createElement("button");u.type="button";u.className="ghost small";u.textContent="استخدام مرة أخرى";
+    u.onclick=()=>{pushUndo("تحميل مهمة سابقة");$("tpl").value=it.type==="تنبيه عام"?"مهمة عامة":it.type;$("msg").value=it.body;if(cfg.t.includes(it.who))$("teacher").value=it.who;picked=it.groups.filter(n=>cfg.g.some(g=>g[0]===n));store.set("p_picked",picked);pickedP=(it.people||[]).filter(ph=>(cfg.p||[]).some(q=>q[1]===ph));store.set("p_pickedP",pickedP);setPrio(it.prio>=0?it.prio:0);fillGroups();fillPeople();renderSend();render();openStep("s-task");toast("تم تحميل المهمة")};
+    const x=document.createElement("button");x.type="button";x.className="ghost small";x.textContent="حذف";
+    x.onclick=()=>{pushUndo("حذف مهمة من السجل");log.splice(i,1);store.set("p_log",log);renderLog()};
+    r.append(u,x);d.appendChild(r);L.appendChild(d);
+  });
+}
+let files=[];
+const fmtSize=b=>b<1048576?ar(Math.max(1,Math.round(b/1024)))+" ك.ب":ar((b/1048576).toFixed(1))+" م.ب";
+function renderFiles(){
+  const w=$("files");w.innerHTML="";
+  files.forEach((f,i)=>{
+    const d=document.createElement("div");d.className="f";
+    if(f.type.startsWith("image/")){const im=document.createElement("img");im.alt="";im.src=URL.createObjectURL(f);d.appendChild(im)}
+    else{const c=document.createElement("div");c.className="ic";c.textContent=f.type==="application/pdf"?"📄":"📎";d.appendChild(c)}
+    const t=document.createElement("span");t.innerHTML=esc(f.name)+"<small>"+fmtSize(f.size)+"</small>";d.appendChild(t);
+    const x=document.createElement("button");x.type="button";x.setAttribute("aria-label","حذف الملف");x.textContent="✕";
+    x.onclick=()=>{pushUndo("حذف الملف");files.splice(i,1);renderFiles()};d.appendChild(x);w.appendChild(d);
+  });
+  $("fileNote").hidden=!files.length;
+  $("share").textContent=files.length?"إرسال المهمة مع الملف عبر واتساب":"إرسال عبر واتساب";
+}
+$("file").onchange=e=>{
+  const add=[...e.target.files];e.target.value="";
+  const big=add.find(f=>f.size>64*1048576);if(big){toast("الملف أكبر من ٦٤ م.ب");return}
+  pushUndo("إضافة ملف");files=[...files,...add].slice(0,5);renderFiles();
+};
+function shareWithFiles(t,fl){
+  try{navigator.clipboard.writeText(t).catch(()=>{})}catch(e){}
+  if(!(navigator.canShare&&navigator.canShare({files:fl}))){toast("هذا المتصفح لا يدعم إرسال الملفات — أُرسل النص، وأرفق الملف من واتساب");window.open("https://wa.me/?text="+encodeURIComponent(t),"_blank");return}
+  navigator.share({files:fl,text:t}).catch(e=>{ if(e.name==="AbortError")return;
+    navigator.share({files:fl}).catch(e2=>{if(e2.name!=="AbortError")toast("تعذّر الإرسال — جرّب ملفًا آخر")}) });
+}
+function sendNow(t,fl){ if(fl.length) shareWithFiles(t,fl); else window.open("https://wa.me/?text="+encodeURIComponent(t),"_blank"); }
+function commit(t){
+  pushUndo("إرسال المهمة");
+  if(!last||last.t!==t){sent=[];sentP=[];store.set("p_sent",sent);store.set("p_sentP",sentP)}
+  last={t,files:files.slice()};
+  const w=whenInfo();
+  log.unshift({type:$("tpl").value,who:$("teacher").value,body:$("msg").value.trim(),prio,groups:picked.slice(),people:pickedP.slice(),when:w?w.day+" "+w.hj+" "+w.time:""});
+  log=log.slice(0,20);store.set("p_log",log);
+  $("msg").value=GREET;$("tpl").value="";prio=-1;document.querySelectorAll("#prio button").forEach(b=>b.setAttribute("aria-pressed","false"));files=[];renderFiles();
+  render();renderSend();renderLog();
+  setTimeout(()=>toast("أُرسلت المهمة ومُسحت من المربع"),400);
+  try{maybeAsk("done")}catch(e){}
+  setTimeout(()=>{$("s-send").classList.add("open");$("s-task").classList.add("open");updateSteps()},50);
+}
+function toast(s){const e=$("toast");e.textContent=s;e.hidden=false;clearTimeout(e._t);e._t=setTimeout(()=>e.hidden=true,2400)}
+async function copy(){
+  const t=current();if(!t){toast("اكتب المهمة أولًا");return false}
+  try{await navigator.clipboard.writeText(t);toast("تم نسخ المهمة");return true}
+  catch(e){toast("لم يتم النسخ — انسخ من المعاينة");return false}
+}
+function setPrio(p){prio=p;document.querySelectorAll("#prio button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.p==p)));render()}
+
+/* ---------- التراجع عن آخر الإجراءات ---------- */
+const undoStack=[];
+const clone=o=>JSON.parse(JSON.stringify(o));
+function snap(){return {tpl:$("tpl").value,msg:$("msg").value,prio,dt:$("dt").value,tm:$("tm").value,wl:$("whenLbl").value,picked:picked.slice(),pickedP:pickedP.slice(),sent:sent.slice(),sentP:sentP.slice(),files:files.slice(),log:clone(log),last,p:clone(cfg.p||[])}}
+function updateUndoBtn(){const n=undoStack.length;$("tools").hidden=!n;$("undoLbl").textContent=n?"("+ar(n)+")":"";$("undoBtn").title=n?"التراجع عن: "+undoStack[n-1].label:""}
+function pushUndo(label){undoStack.push({label,s:snap()});if(undoStack.length>30)undoStack.shift();updateUndoBtn()}
+function doUndo(){
+  const it=undoStack.pop();if(!it){toast("لا يوجد ما يُتراجع عنه");return}
+  const s=it.s;
+  $("tpl").value=s.tpl;$("msg").value=s.msg;$("dt").value=s.dt;$("tm").value=s.tm;$("whenLbl").value=s.wl;
+  picked=s.picked;pickedP=s.pickedP;sent=s.sent;sentP=s.sentP;files=s.files;log=s.log;last=s.last;cfg.p=s.p;
+  store.set("p_picked",picked);store.set("p_pickedP",pickedP);store.set("p_sent",sent);store.set("p_sentP",sentP);store.set("p_log",log);store.set("p_cfg",cfg);
+  renderFiles();fillGroups();fillPeople();fillSetup();setPrio(s.prio);renderSend();renderLog();render();
+  updateUndoBtn();toast("تم التراجع عن: "+it.label);
+}
+
+/* ---------- steps ---------- */
+const STEPS=["s-teacher","s-task","s-groups","whenSec","s-send"];
+const visibleSteps=()=>STEPS.filter(id=>!$(id).hidden);
+let curStep=null;
+function openStep(id,scroll=true,fromPop=false){
+  STEPS.forEach(x=>$(x).classList.toggle("open",x===id));
+  updateSteps();
+  if(!fromPop){try{if(curStep===null)history.replaceState({st:id},"");else if(curStep!==id)history.pushState({st:id},"")}catch(e){}}
+  curStep=id;
+  if(scroll) setTimeout(()=>$(id).scrollIntoView({behavior:"smooth",block:"start"}),60);
+}
+addEventListener("popstate",e=>{const st=e.state&&e.state.st;if(st&&STEPS.includes(st)&&!$(st).hidden)openStep(st,true,true)});
+function prevOf(id){const v=visibleSteps();return v[v.indexOf(id)-1]}
+function nextOf(id){const v=visibleSteps();return v[v.indexOf(id)+1]}
+function updateProg(){
+  const v=visibleSteps(),open=v.find(id=>$(id).classList.contains("open"))||v[0],i=v.indexOf(open);
+  const done=v.filter(id=>$(id).classList.contains("done")).length;
+  $("progLbl").textContent="الخطوة "+ar(i+1)+" من "+ar(v.length);
+  $("progName").textContent=$(open).querySelector("h2").childNodes[1].textContent.trim();
+  $("progBar").style.width=Math.max(8,done/v.length*100)+"%";
+}
+function updateSteps(){
+  visibleSteps().forEach((id,i)=>{$(id).querySelector("h2 .n").textContent=ar(i+1)});
+  const sum=(id,t)=>{$(id).querySelector(".sum").textContent=t};
+  const t=$("teacher").value;
+  sum("s-teacher",t?nm(t):"");
+  const b=bodyOf();
+  sum("s-task",b?$("tpl").value+" · "+b.replace(GREET.trim(),"").trim().slice(0,30):"");
+  {const parts=[];
+  if(picked.length)parts.push(picked.length<=3&&!pickedP.length?picked.join("، "):ar(picked.length)+" قروبات");
+  if(pickedP.length)parts.push(ar(pickedP.length)+" أفراد");
+  sum("s-groups",parts.join(" + "))}
+  const w=whenInfo();sum("whenSec",w?ar(w.day+" "+w.hj+" · "+w.time):"");
+  sum("s-send","");
+  $("s-teacher").classList.toggle("done",!!t);
+  $("s-task").classList.toggle("done",!!b&&!!$("tpl").value&&prio>=0);
+  $("s-groups").classList.toggle("done",(picked.length+pickedP.length)>0);
+  $("whenSec").classList.toggle("done",(picked.length+pickedP.length)>0&&$("s-task").classList.contains("done"));
+  try{updateProg()}catch(e){}
+}
+STEPS.forEach(id=>{const h=$(id).querySelector("h2");
+  const go=()=>{
+    if($(id).classList.contains("open")){$(id).classList.remove("open");updateSteps();return}
+    const v=visibleSteps(),i=v.indexOf(id),miss=v.slice(0,i).find(x=>!$(x).classList.contains("done"));
+    if(miss){toast("أكمل خطوة «"+$(miss).querySelector("h2").childNodes[1].textContent.trim()+"» أولًا");openStep(miss,false);return}
+    openStep(id,false);
+  };
+  h.onclick=go;h.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();go()}};
+});
+document.querySelectorAll("[data-next]").forEach(b=>b.onclick=()=>{
+  const id=b.dataset.next;
+  if(id==="s-task"&&!$("s-task").classList.contains("done")){toast("أكمل خانات المهمة أولًا");return}
+  if(id==="s-groups"&&!(picked.length+pickedP.length)){toast("اختر قروبًا أو فردًا على الأقل");return}
+  openStep(nextOf(id));
+});
+document.querySelectorAll("[data-prev]").forEach(b=>b.onclick=()=>{const p=prevOf(b.dataset.prev);if(p)openStep(p)});
+$("teacher").addEventListener("change",()=>{store.set("p_teacher",$("teacher").value);ck.set("p_teacher",$("teacher").value);render();openStep("s-task")});
+
+/* ---------- wiring ---------- */
+Object.keys(TPL).forEach(k=>{const o=document.createElement("option");o.textContent=k;$("tpl").appendChild(o)});
+{const o=document.createElement("option");o.value="";o.disabled=true;o.textContent="اختر نوع المهمة…";$("tpl").prepend(o)}
+$("tpl").value="";
+$("msg").value=store.get("p_msg","").trim()?store.get("p_msg",""):GREET;
+$("tpl").onchange=()=>{if($("tpl").value==="تقرير يوم دراسي"){$("whenLbl").value="اليوم الدراسي"}else if($("whenLbl").value==="اليوم الدراسي"){$("whenLbl").value="موعد التسليم"}render();if(!bodyOf())setTimeout(()=>{$("msg").focus()},50)};
+$("msg").addEventListener("focus",()=>{const m=$("msg");if(m.value===GREET)setTimeout(()=>m.setSelectionRange(m.value.length,m.value.length),0)});
+document.querySelectorAll("#prio button").forEach(b=>b.onclick=()=>setPrio(+b.dataset.p));
+["msg"].forEach(i=>$(i).addEventListener("input",render));
+["teacher","dt","tm","whenLbl","emo"].forEach(i=>$(i).addEventListener("change",render));
+$("all").onclick=()=>{pushUndo("تحديد كل القروبات");picked=cfg.g.map(g=>g[0]);store.set("p_picked",picked);fillGroups();renderSend()};
+$("none").onclick=()=>{pushUndo("إلغاء تحديد القروبات");picked=[];store.set("p_picked",picked);fillGroups();renderSend()};
+$("copy").onclick=copy;
+$("pAll").onclick=()=>{pushUndo("تحديد الأفراد");pickedP=[...new Set([...pickedP,...visP()])];store.set("p_pickedP",pickedP);fillPeople();renderSend()};
+$("pNone").onclick=()=>{pushUndo("إلغاء تحديد الأفراد");const v=visP();pickedP=pickedP.filter(x=>!v.includes(x));store.set("p_pickedP",pickedP);fillPeople();renderSend()};
+$("pSearch").oninput=()=>fillPeople();
+$("pAdd").onclick=()=>{
+  const ph=normPhone($("pPhone").value);
+  if(!ph){toast("اكتب رقم جوال صحيحًا مثل ٠٥٠١٢٣٤٥٦٧");return}
+  pushUndo("إضافة فرد");
+  const n=$("pName").value.trim(),ex=cfg.p.find(q=>q[1]===ph);
+  if(ex){if(n)ex[0]=n}else cfg.p.push([n,ph]);
+  if(!pickedP.includes(ph))pickedP.push(ph);
+  store.set("p_cfg",cfg);store.set("p_pickedP",pickedP);
+  $("pSearch").value=n||ph;$("pName").value="";$("pPhone").value="";$("addBox").open=false;fillPeople();fillSetup();renderSend();toast("أُضيف وحُدِّد");
+};
+$("pPhone").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();$("pAdd").click()}});
+document.querySelectorAll("#rtabs button").forEach(b=>b.onclick=()=>{
+  document.querySelectorAll("#rtabs button").forEach(x=>x.setAttribute("aria-pressed",String(x===b)));
+  $("tab-g").hidden=b.dataset.tab!=="g";$("tab-p").hidden=b.dataset.tab!=="p";
+});
+function addPeople(list){
+  pushUndo("استيراد أفراد");
+  let added=0;
+  list.forEach(([n,ph])=>{const ex=cfg.p.find(q=>q[1]===ph);if(ex){if(n&&!ex[0])ex[0]=n}else{cfg.p.push([n,ph]);added++}});
+  store.set("p_cfg",cfg);fillPeople();fillSetup();renderSend();
+  return added;
+}
+function loadXlsx(){return new Promise((res,rej)=>{if(window.XLSX)return res();const sc=document.createElement("script");sc.src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js";sc.onload=res;sc.onerror=()=>rej(new Error("x"));document.head.appendChild(sc)})}
+async function readPeopleFile(f){
+  let text="";
+  if(/\.(xlsx|xls)$/i.test(f.name)){
+    try{await loadXlsx()}catch(e){toast("تعذّر تحميل قارئ Excel — احفظ الملف بصيغة CSV وارفعه");return}
+    const wb=XLSX.read(await f.arrayBuffer(),{type:"array"});
+    const rows=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{header:1,raw:false,defval:""});
+    text=rows.map(r=>r.join("\t")).join("\n");
+  }else{
+    const buf=await f.arrayBuffer();
+    try{text=new TextDecoder("utf-8",{fatal:true}).decode(buf)}catch(e){text=new TextDecoder("windows-1256").decode(buf)}
+  }
+  const {list,bad}=parseLines(text);
+  if(!list.length){toast("لم أجد أرقام جوال صحيحة في الملف");return}
+  const added=addPeople(list);
+  toast("أُضيف "+ar(added)+" فردًا"+(bad?" — وتجاهلتُ "+ar(bad)+" سطرًا برقم غير صحيح":""));
+}
+$("pPasteAdd").onclick=()=>{
+  const {list,bad}=parseLines($("pPaste").value);
+  if(!list.length){toast("لم أجد أرقام جوال صحيحة في النص الملصوق");return}
+  const added=addPeople(list);$("pPaste").value="";
+  toast("أُضيف "+ar(added)+" فردًا"+(bad?" — وتجاهلتُ "+ar(bad)+" سطرًا برقم غير صحيح":""));
+};
+$("pFile").onchange=e=>{const f=e.target.files[0];e.target.value="";if(f)readPeopleFile(f).catch(()=>toast("تعذّرت قراءة الملف"))};
+$("undoBtn").onclick=doUndo;
+addEventListener("keydown",e=>{if((e.ctrlKey||e.metaKey)&&!e.shiftKey&&String(e.key).toLowerCase()==="z"){const t=e.target&&e.target.tagName;if(t==="TEXTAREA"||t==="INPUT"||t==="SELECT")return;e.preventDefault();doUndo()}});
+$("share").addEventListener("click",e=>{
+  e.preventDefault();
+  const t=full();
+  if(!t){ if(last){sendNow(last.t,last.files)} else toast("اكتب المهمة أولًا"); return }
+  sendNow(t,files);commit(t);
+});
+$("resend").onclick=()=>{if(last)sendNow(last.t,last.files)};
+/* فُتح من فصلي: زر رجوع إليه، ويبقى ظاهرًا طوال الجلسة */
+(function(){try{if(new URLSearchParams(location.search).get("from")==="fasli"){sessionStorage.setItem("fromFasli","1");history.replaceState(null,"",location.pathname+location.hash)}if(sessionStorage.getItem("fromFasli"))$("backFasli").hidden=false}catch(e){}})();
+/* تصفير الاختيارات: يبقى اسم المعلم، ويعود كل ما عداه كما في أول فتح */
+$("resetBtn").onclick=()=>{
+  pushUndo("التصفير");
+  $("tpl").value="";$("msg").value=GREET;store.set("p_msg","");
+  setPrio(-1);files=[];renderFiles();$("file").value="";
+  picked=[];sent=[];pickedP=[];sentP=[];store.set("p_picked",picked);store.set("p_sent",sent);store.set("p_pickedP",pickedP);store.set("p_sentP",sentP);fillGroups();fillPeople();
+  if($("dt").options.length)$("dt").selectedIndex=0;
+  $("tm").value="07:00";$("whenLbl").value="موعد التسليم";store.set("p_tm","07:00");store.set("p_wl","موعد التسليم");
+  last=null;$("lastBox").hidden=true;
+  renderSend();render();openStep($("teacher").value?"s-task":"s-teacher");
+  window.scrollTo({top:0,behavior:"smooth"});toast("تم التصفير — ابدأ مهمة جديدة");
+};
+$("save").onclick=()=>{
+  const t=$("tList").value.split("\n").map(s=>s.trim()).filter(Boolean);
+  const g=$("gList").value.split("\n").map(s=>s.trim()).filter(Boolean).map(s=>{const i=s.indexOf("|");return i<0?[s,""]:[s.slice(0,i).trim(),s.slice(i+1).trim()]}).filter(x=>x[0]);
+  if(!g.length){toast("أضف قروبًا واحدًا على الأقل");return}
+  const {list:p,bad}=parseLines($("pList").value);
+  cfg={t,g,s:$("sender").value.trim(),p};store.set("p_cfg",cfg);
+  fillTeachers();fillGroups();fillPeople();renderSend();render();
+  toast(bad?"تم الحفظ — تجاهلتُ "+ar(bad)+" سطرًا برقم غير صحيح":"تم حفظ الإعدادات");
+};
+$("shareCfg").onclick=async()=>{
+  const b=btoa(unescape(encodeURIComponent(JSON.stringify({t:cfg.t,g:cfg.g,s:cfg.s})))).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"");
+  const url=location.origin+location.pathname+"#c="+b;
+  try{await navigator.clipboard.writeText(url);toast("تم نسخ الرابط الجاهز")}catch(e){prompt("انسخ الرابط:",url)}
+};
+
+
+/* ---------- install (PWA) ---------- */
+const isStandalone=()=>matchMedia("(display-mode: standalone)").matches||navigator.standalone===true;
+const isAndroid=/android/i.test(navigator.userAgent);
+const isIOS=/iphone|ipad|ipod/i.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
+let deferred=null;
+if("serviceWorker" in navigator){addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}))}
+addEventListener("beforeinstallprompt",e=>{e.preventDefault();deferred=e;$("installBtn").hidden=false;maybeAsk("open")});
+addEventListener("appinstalled",()=>{deferred=null;$("installBtn").hidden=true;closeSheet();store.set("p_installed",1);toast("تم التثبيت — ستجده على الشاشة الرئيسية")});
+function canAsk(){return !isStandalone()&&!store.get("p_installed",0)&&(deferred||isIOS||isAndroid)}
+function showSheet(){
+  if(!canAsk())return;
+  const manual=!deferred;
+  $("insIos").hidden=!(manual&&isIOS);
+  $("insAnd").hidden=!isAndroid;
+  $("insSam").hidden=!isAndroid;
+  $("insOr").hidden=!(isAndroid&&deferred);
+  $("insPerks").hidden=isAndroid||(manual&&isIOS);
+  $("insGo").textContent=manual?"فهمت":"تثبيت الآن";
+  $("installSheet").hidden=false;
+}
+function closeSheet(){$("installSheet").hidden=true}
+function maybeAsk(when){
+  if(!canAsk())return;
+  const last=store.get("p_later",0);
+  if(Date.now()-last<(when==="open"?1:0.5)*864e5)return;
+  setTimeout(showSheet,when==="open"?1800:900);
+}
+$("installBtn").onclick=showSheet;
+$("insLater").onclick=()=>{store.set("p_later",Date.now());closeSheet()};
+$("installSheet").onclick=e=>{if(e.target.id==="installSheet")closeSheet()};
+$("insGo").onclick=async()=>{
+  if(deferred){deferred.prompt();const r=await deferred.userChoice.catch(()=>({}));deferred=null;$("installBtn").hidden=true;closeSheet();if(r&&r.outcome==="accepted")store.set("p_installed",1)}
+  else closeSheet();
+};
+if((isIOS||isAndroid)&&!isStandalone()&&!store.get("p_installed",0)){$("installBtn").hidden=false;setTimeout(()=>maybeAsk("open"),1200)}
+if(isStandalone())store.set("p_installed",1);
+fillTeachers();fillGroups();fillPeople();fillSetup();renderSend();renderLog();render();
+openStep($("teacher").value?"s-task":"s-teacher",false);
+</script>
+</body>
+</html>
