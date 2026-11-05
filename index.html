@@ -931,8 +931,9 @@ async function loadAuth(){
     if(!r.ok)throw 0;
     const j=await r.json();
     AUTH=(j.documents||[]).map(d=>{const f=d.fields||{},g=k=>(f[k]&&f[k].stringValue)||"";return{i:g("i"),s:g("s"),v:g("v"),c:g("c"),a:g("a"),k:g("k"),r:g("r")}}).filter(x=>x.i&&x.s&&x.v&&x.c);
+    if(!AUTH.length)AUTH=SEED.slice();
     store.set("p_authlist",AUTH);
-  }catch(e){AUTH=store.get("p_authlist",[])||[]}
+  }catch(e){AUTH=store.get("p_authlist",[])||[];if(!AUTH.length)AUTH=SEED.slice()}
   return AUTH;
 }
 async function deriveKey(secret,salt,usage){
