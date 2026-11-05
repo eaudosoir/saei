@@ -211,6 +211,7 @@ footer{text-align:center;color:var(--muted);font-size:.8rem}
       <select id="teacher"><option value="" disabled selected>اختر اسمك…</option></select>
       <p class="hint" id="noTeachers" hidden></p>
       <button type="button" id="logoutBtn" style="margin-top:10px;background:var(--soft);color:var(--ink);font-size:.9em;padding:8px 14px">تبديل المستخدم (خروج)</button>
+      <button type="button" id="admBtn" style="margin-top:10px;background:var(--grad);color:#fff;font-size:.9em;padding:8px 14px" hidden>لوحة المعلمين</button>
     </div>
   </section>
 
@@ -403,6 +404,20 @@ footer{text-align:center;color:var(--muted);font-size:.8rem}
     <button type="submit" id="gateBtn" style="background:var(--grad);color:#fff;padding:13px">دخول</button>
     <p style="margin:0;color:var(--muted);font-size:.85em">نسيت رقمك؟ تواصل مع أ. عبدالله لإصدار رقم جديد.</p>
   </form>
+</div>
+<div id="adm" style="position:fixed;inset:0;z-index:9998;background:var(--bg);color:var(--ink);overflow:auto;padding:16px" hidden>
+  <div style="max-width:560px;margin:0 auto;display:grid;gap:14px">
+    <div style="display:flex;justify-content:space-between;align-items:center"><h2 style="margin:0">لوحة المعلمين <small id="admCount" style="color:var(--muted)"></small></h2><button type="button" id="admClose" style="background:var(--soft);color:var(--ink);padding:8px 14px">إغلاق</button></div>
+    <p id="admMsg" style="margin:0;min-height:1.4em;font-weight:700"></p>
+    <form id="admLoginForm" autocomplete="off" style="display:grid;gap:10px;background:var(--surface);border-radius:16px;padding:14px" >
+      <div id="admLogin" style="display:grid;gap:10px"><p style="margin:0;color:var(--muted)">أدخل كلمة سر حساب المشرف (حساب فصلي: appmaill03@gmail.com)</p><input id="admPw" type="password" autocomplete="current-password" placeholder="كلمة سر المشرف" style="font:inherit;padding:12px;border-radius:12px;border:2px solid var(--line);background:var(--bg);color:var(--ink)"><button type="submit" id="admLoginBtn" style="background:var(--grad);color:#fff;padding:12px">دخول المشرف</button></div>
+    </form>
+    <div id="admMain" style="display:grid;gap:14px" hidden>
+      <form id="admAddForm" autocomplete="off" style="display:grid;gap:8px;background:var(--surface);border-radius:16px;padding:14px"><b>إضافة معلم جديد</b><input id="admName" placeholder="الاسم (مثال: الأستاذ فلان)" style="font:inherit;padding:11px;border-radius:12px;border:2px solid var(--line);background:var(--bg);color:var(--ink)"><input id="admRole" placeholder="الدور (اختياري، مثال: وكيل)" style="font:inherit;padding:11px;border-radius:12px;border:2px solid var(--line);background:var(--bg);color:var(--ink)"><button type="submit" style="background:var(--grad);color:#fff;padding:11px">إضافة وتوليد رقم</button></form>
+      <button type="button" id="admSeed" style="background:var(--warn-bg);color:var(--warn);padding:11px" hidden>استيراد المعلمين الحاليين (مرة واحدة)</button>
+      <div id="admList" style="display:grid;gap:10px"></div>
+    </div>
+  </div>
 </div>
 <script>
 const $=id=>document.getElementById(id);
@@ -904,25 +919,45 @@ if((isIOS||isAndroid)&&!isStandalone()&&!store.get("p_installed",0)){$("installB
 if(isStandalone())store.set("p_installed",1);
 fillTeachers();fillGroups();fillPeople();fillSetup();renderSend();renderLog();render();
 openStep($("teacher").value?"s-task":"s-teacher",false);
-/* ---------- دخول المعلم بالرقم السري ---------- */
-const AUTH=[{"i":"01","s":"NWOZhLcqDi3HNcjDZrq/jQ==","v":"sGtFMBh8K7j+ytIw","c":"vKvj5fACtN89bX5UDdDd6CBSuoGNheucAPVcjWFbeLuncwq7Pz56mHAjs70An9A1JHZjyXui85qR1nGYqacM/YMIfdXl1YqA0NSEfWJA1eHQ"},{"i":"02","s":"8lDWQ7d2GjKpu7lBXJVzRg==","v":"LbgIt3QFuS/u/oAE","c":"myZd+D439QOffcqzCE34foYsbgqjIbe/clUkmdKVcuan83FwcUU4aBa9LxrTjuDSF/cxY0XoVxPGVmuewkOXJ9S0pgMCnR+MzFYSgm4VPSzXQP6BCHw4XoUo1SxAFlzOMJdOiDI+"},{"i":"03","s":"t9pxonDbgDGuoowD37WwFw==","v":"RhNZq0WRqcWBuFyV","c":"7XoCczv05EK6ocVARp0jOkNBMVPWBCrPoMBPR/dCe5PTN2o15YpQ7LjSuSU6rYr46h/J+s2htlotVI3MQR7oSLxxnyMyJCL5JmUdZGmRqlJ8Rdq+GIncz/Ic2Pt1npZ0ddZvMVww"},{"i":"04","s":"2OP9aAhhE0nxCpNE6IQnSg==","v":"Pfddte1OEML/fObq","c":"Y0QLck9oQx4rtRAEWPPppla33x0GH5mpIzzrlsmCwoHJfUWx+h/lCpqgaIJdauoyXtTuIC/3Koq+/VG/JBSu54ZanVdfaWcQJgnl9HFM"},{"i":"05","s":"xobICdNEKPr/Qz+qBl9xRg==","v":"HIAt2BV15u+GYPAT","c":"dhf42s40gMwJ7Zdhd385KcZMiUrEg5Zn82pIlzBbboieKWyWRfKrJ9EZ1cE86chUJFyfQYk+WDrOa6IqNs/QrTGht4AvtXWoyIFmJmZ/UUz7depNrQfzrbfLPlEd"},{"i":"06","s":"oWROYpgE58VPHTIKPDU/uQ==","v":"OEVY/gpl2Zvx4VuY","c":"hFngwGvODS8G1lbQfdbEuyFk6YXtpg5zKfIEiPX3E+7Wp3BZI3taKxhIRfRZKwwAvQZp0GbV"},{"i":"07","s":"/UhrfUTBlygx4ZxWWYTUxg==","v":"sNq81a+N/9dJm49E","c":"KwJXOTI/UoY5dG0lKsIvjx6yfNIQ36fuTZ6MYLhNCN2aavkD2ZrNrXQtvUXblv865vAZ0Vo6"},{"i":"08","s":"IUfBoCFPDHqclrsM6hHDOA==","v":"d5ujPxWTgA+UpZn+","c":"GbnjCv2k9wJN1gIOg146ub9psCl0F9yaXY95VZ42SOBb7zhUEeNFzJycTzwkaA=="},{"i":"09","s":"L+dnZfBNewQtX2G/WEApag==","v":"n9PISAmRcUwzrZv/","c":"od1186fHt5/ZpHk6YtmZK8g+7bRWiJfoj72IqQpysbokoPacLgfkRV4DbwT0+f62Cvl1xM8="},{"i":"10","s":"T1KSby4NwPOXRmbxbgGKhg==","v":"BscODsv1k1nbaEvf","c":"wBB5vQoSgT4bOqOiVQI4xzCTrStKadV6I6OlNiIRgupv6Nx53yTvCdT3hGU="},{"i":"11","s":"sCMmLXv+WQGCzXrUK6+I+A==","v":"8xAQxjqp/dS45Qx6","c":"u+eWtBSKfmwuTocehJqyXv9w/wu5f4DgDD70WtBHsGgbnJeVrGb/eP6GMo3CRp6QNIO9b71z"},{"i":"12","s":"BEWso96JvHhcmuvDGHztWQ==","v":"/8PFfc4KeO3iEzlc","c":"ddyob10WBOVwB8BWNCOG7q9jlmyOJ9sLPAQ8CE29pifwKn1fwpnkWzIHOif/SYnr"},{"i":"13","s":"zPHX09Ao4W4dbW0AJtdcuQ==","v":"V+azdt+h90RlQcx1","c":"kFtnoF/ajbM5puRbWeVpnPMtxxqgLCHQ4AZTMQMO8LWnnkZlF8MS0uDcmfG69PGpJahPZA=="},{"i":"14","s":"YCk8mHjHm2StZo7bpcNARQ==","v":"QONVBVFgRqlhrNWX","c":"kXHpWux+RTMemjmTe9kkxGevAKwuAlg7Z71hKE9ePfcAh1LcMqzCOAjNCpO6MMAg"},{"i":"15","s":"UCZsW7K5EaVHN8qgCk+2cw==","v":"EJC3uum7pwGYX+H4","c":"wjj8meAos2KWE2GGyZF0rLCnl1onhQ09Cv7MLS8Q2mtaeC4WHTxoUKC9/2FU9NxnCtky1xcD56erhSH+cGrQMn/o"},{"i":"16","s":"74GOq2QU0MNAnuEWrsYFLw==","v":"sehltXQtQ4dkCQWq","c":"71berYxFv3IglX8djRlrXJ5ANOjSmB3nIUOZWAsCEzI3eM03T9a6T7Xqa4rXW7WFbaxfqpcNxLG9mw=="},{"i":"17","s":"fWy5sHw+ltbF7ywVNO9zRw==","v":"MKuQH4hO4NSja/KB","c":"Vnp4t0+k/3NXZB6H9BXbOWby6V81a7uJydxTKrB8NPyL4+dY337IYlB8mshxf9eiukgeV6fT4wGqeQ=="},{"i":"18","s":"OOEOWzv1g92ZrQ2RqymJUA==","v":"Ya8vVeRosaX86HT7","c":"21FrkG7x/rQG8wvhyFLkz+jSG9dSe9bebOE0gmPzucf+GIJ0CbgdeciXcUncO00pNvS+m94hmeni2Q=="},{"i":"19","s":"4R65M+wiMwcgFZLJM1gdVA==","v":"i8d4heDcVT9MvdIF","c":"ftlyUJoxOJW9fcsxHjS4cLj9M1NmSm5MX74YkHGLEPkZz0/J0+94xrICfnRWMyFN1j2r0+Ta"},{"i":"20","s":"xln0qw1hQFddeh+9shUdFQ==","v":"Y7KIFFbYwKhK28wn","c":"nvhphttoAB70yoLALSDm4b6JqMRaI4gClwkSzjH53a+6HwNMzitPlw61Pr1wq6jXkU2uUZbqHv9UmCzj"},{"i":"21","s":"7njC318Yye5rjf1cSYTvkg==","v":"FGmdqQpxjwspk4UF","c":"4kn7oDq7zCC9OWhkSNWGF550fMLGDYc1mI5CEI5FcJKxnZKvgOZReqpCBWafnw=="},{"i":"22","s":"1UuzSyn69LX+/yq7GqF6ow==","v":"vmYs7HngTjPA2p7V","c":"RfUn/4qBnZ1i+T2N3o0qc1gst8zVPN48Rcpk7MffGJcSyTTUEznzGl200gJtyeHC"},{"i":"23","s":"ec0M5/JwYk9h7dibQuV9RA==","v":"bBb086RxPmf+ZUk3","c":"mPsVOJy3QXRa72gYCbtw4RvatKmvCGu9m8cHKkX0zVajdL5N/0NbhgQpK0ayKHjlQWdArsd8"},{"i":"24","s":"rma/ZDI7F2XST1iYBQolJg==","v":"UHDAUHo1/zAlRzoE","c":"tIHxBTy7DiDfnX/pZaIAbXSVvDGa254GIUG/COVxccBEsgAAKGaDMEIMzgfWL663/+gCKw=="},{"i":"25","s":"kcB5Slsvb2ZBOCZ/EanDrQ==","v":"bYigJ7HaKfVrtnii","c":"PuO3gFz9BqEVuNWZN6qBma7T16WLoXpjRVit+kzMrBm1jHj3nkqdc4bA7lOIFDPy"},{"i":"26","s":"pMh7yQh0K/MLPZMhe7CzHw==","v":"FCSPIKnOkzNrKUxf","c":"+OB4q5JJi+8N5TdJjShvvIhfI3QNzIJLSe9yWa9AwobnIQEjcmDY4LVxbiGRna4/"},{"i":"27","s":"vvbkXOfLhHTR6EeLeMd+5Q==","v":"/YJEc0Cf5HqMX2mo","c":"dLkOy/qjlTwgSu8o+mRCOZAk2tgCUcwclm6jmI9sR5VZZfaF/cOYWBkcCiXWYhpN"},{"i":"28","s":"eahnHqmsz+v+bNSizfmorg==","v":"TKuLuYB1qz+Cgm3J","c":"5mCT1WiJDpqST/sCP1wLR+YGCJdi9oc1HzNzgHkVjk7q1lp0klcxrf4CBMN8Q2fv"},{"i":"29","s":"cAK8Y2EU6YetHT74yhPG4A==","v":"bqKkHwUYyH2ugm/v","c":"PtpqqBU/7DvVvoBEx+dmmcriKx6LSriM84uCbdy+LPozwwZS5/I7oAJHZeTBPdsW"},{"i":"30","s":"n2ZhCp7NKoAB5ZTq1Z+1Cw==","v":"Qq9LsoGTZlHSzhGP","c":"GFshKu0rmbPAPzXO5YQocXgo2hJyfvxJSR4gceGE66ULgBG4MbX7mHZQ4Iu5zk2V"},{"i":"31","s":"24kcw5OdC+o2+2GM9FoVhQ==","v":"QuMeXbVpgxn36c6g","c":"2F8w2mSCqx1CkZrDS6ejlYLu75VFUnynl/WZPwJfRTgiXTFHe49sDcAAY+xvEQ=="},{"i":"32","s":"dKMa6cM3A0pjT7N2I6ZN7A==","v":"Q7GbqEc4XZfnzK6F","c":"+iNEl2+gX9GI59PrfntxD2XAJSkkoPQYoHxYgDw8IJmhqp5jpWt7wRn1C4zJxuPEmiygaf90"},{"i":"33","s":"9zRuaQhiHtmDeu2ZTGDFdg==","v":"lWqGjDCM9FTKHkIf","c":"8uw23FIBbi6KUIOYiDC4Lwjje87vmyHEeG0+nuf2y29PnfLKSCegKO4om/1DL7Gs"},{"i":"34","s":"ZEGxqG1M8fFKcYBSZDgEZw==","v":"w1gjo9HGHKErZE7A","c":"/chI+dUodGmpCvgqNi+0xG3Azue5tVYwpGzvuya3KKBYImyqGb7HSOjVdnJMPwZS"},{"i":"35","s":"fGv4+Kq6OecXfWKYuyRF/Q==","v":"20mIyQr0+ykwZ7Hr","c":"om0p0oxsWv0ctWeH9tsyCKNs3IzFjoRFgtQHF4yH6CJv/S8+s5nZQl5GEfIM0gSG"},{"i":"36","s":"P74UOAD8zd+CXBrf11BsLg==","v":"Dk6Md7Ux9io41CzI","c":"oGCg8XbWCcqwSc6Qv5tntao1grUaSN3Y1f5YBxNm4+lYARfUs8AQmwRUY0RCe0YVxCrYlJ9g"}];
+/* ---------- دخول المعلم بالرقم السري + لوحة المعلمين ---------- */
+const FB={k:"AIzaSyBhtCzp3axk_JYgbtI3Kf3wq9a_O-5F-K0",p:"fasli-873ee"};
+const FS="https://firestore.googleapis.com/v1/projects/"+FB.p+"/databases/(default)/documents/saei_teachers";
 const _b64=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
+const _tob64=u=>{let s="";u.forEach(b=>s+=String.fromCharCode(b));return btoa(s)};
+let AUTH=[],ME=null;
+async function loadAuth(){
+  try{
+    const r=await fetch(FS+"?pageSize=300&key="+FB.k,{cache:"no-store"});
+    if(!r.ok)throw 0;
+    const j=await r.json();
+    AUTH=(j.documents||[]).map(d=>{const f=d.fields||{},g=k=>(f[k]&&f[k].stringValue)||"";return{i:g("i"),s:g("s"),v:g("v"),c:g("c"),a:g("a"),k:g("k"),r:g("r")}}).filter(x=>x.i&&x.s&&x.v&&x.c);
+    store.set("p_authlist",AUTH);
+  }catch(e){AUTH=store.get("p_authlist",[])||[]}
+  return AUTH;
+}
+async function deriveKey(secret,salt,usage){
+  const km=await crypto.subtle.importKey("raw",new TextEncoder().encode(secret),"PBKDF2",false,["deriveKey"]);
+  return crypto.subtle.deriveKey({name:"PBKDF2",salt,iterations:200000,hash:"SHA-256"},km,{name:"AES-GCM",length:256},false,usage);
+}
 async function tryCode(raw){
   const code=String(en(raw)).toUpperCase().replace(/[^0-9A-Z]/g,"");
   if(code.length!==10)return null;
   const a=AUTH.find(x=>x.i===code.slice(0,2));if(!a)return null;
   try{
-    const km=await crypto.subtle.importKey("raw",new TextEncoder().encode(code.slice(2)),"PBKDF2",false,["deriveKey"]);
-    const k=await crypto.subtle.deriveKey({name:"PBKDF2",salt:_b64(a.s),iterations:200000,hash:"SHA-256"},km,{name:"AES-GCM",length:256},false,["decrypt"]);
-    return new TextDecoder().decode(await crypto.subtle.decrypt({name:"AES-GCM",iv:_b64(a.v)},k,_b64(a.c)));
+    const k=await deriveKey(code.slice(2),_b64(a.s),["decrypt"]);
+    const name=new TextDecoder().decode(await crypto.subtle.decrypt({name:"AES-GCM",iv:_b64(a.v)},k,_b64(a.c)));
+    return {name,entry:a,secret:code.slice(2)};
   }catch(e){return null}
 }
 let _fails=0,_lockUntil=0;
 async function enterWith(raw){
-  const name=await tryCode(raw);
-  if(!name)return false;
-  cfg.t=[name];store.set("p_auth",raw);
-  fillTeachers();$("teacher").value=name;store.set("p_teacher",name);try{ck.set("p_teacher",name)}catch(e){}
+  await loadAuth();
+  const res=await tryCode(raw);
+  if(!res)return false;
+  ME=res;ADM.key=null;
+  cfg.t=[res.name];store.set("p_auth",raw);
+  fillTeachers();$("teacher").value=res.name;store.set("p_teacher",res.name);try{ck.set("p_teacher",res.name)}catch(e){}
+  $("admBtn").hidden=res.entry.r!=="admin";
   $("gate").hidden=true;render();openStep("s-task",false);
   return true;
 }
@@ -939,6 +974,87 @@ $("gateForm").addEventListener("submit",async e=>{
   else msg.textContent="الرقم غير صحيح، تأكد وأعد المحاولة";
 });
 $("logoutBtn").onclick=()=>{store.set("p_auth","");store.set("p_teacher","");try{ck.set("p_teacher","")}catch(e){}location.reload()};
+
+/* ----- لوحة المعلمين (للمشرف فقط) ----- */
+const ADM={key:null,token:"",exp:0};
+const ADM_SALT=new TextEncoder().encode("saei-admin-v1");
+const SEED=[{"i":"01","s":"NWOZhLcqDi3HNcjDZrq/jQ==","v":"sGtFMBh8K7j+ytIw","c":"vKvj5fACtN89bX5UDdDd6CBSuoGNheucAPVcjWFbeLuncwq7Pz56mHAjs70An9A1JHZjyXui85qR1nGYqacM/YMIfdXl1YqA0NSEfWJA1eHQ","a":"LCbu0/lZ70yM7Yi8MSm/M/GFXYEaA6/yAuOgB9uLqSQo5M94bGNb5mAomMOLkLa5VnL19xrvmS6dE5hlVlHOZdOXJRwo8HsMvctPYYpb096nsKKv18kr644PNSSK","k":"UrMKxA0aHl8//XpJvQarDIA8rvlQu/ocn1dWRjJs8K8psIab"},{"i":"02","s":"8lDWQ7d2GjKpu7lBXJVzRg==","v":"LbgIt3QFuS/u/oAE","c":"myZd+D439QOffcqzCE34foYsbgqjIbe/clUkmdKVcuan83FwcUU4aBa9LxrTjuDSF/cxY0XoVxPGVmuewkOXJ9S0pgMCnR+MzFYSgm4VPSzXQP6BCHw4XoUo1SxAFlzOMJdOiDI+","a":"J5ZBvEECo97wFjelf5xOWPpvGF1rDKlytIglBbhoFEpl6EiAoncaduJqRcySs+QbnezR2GezYT6BNXeJxGEpi6fmrPazDBcAcGU/JTOd0vpuSVhYHqoOa9vYj/kVS8q0iDb0MF31mrOrZyX6hkt5Ngwn","k":"1zfvh6ImAtEoumL+GzCrlaawTAM+veOeKicH5NV02b7zs79D"},{"i":"03","s":"t9pxonDbgDGuoowD37WwFw==","v":"RhNZq0WRqcWBuFyV","c":"7XoCczv05EK6ocVARp0jOkNBMVPWBCrPoMBPR/dCe5PTN2o15YpQ7LjSuSU6rYr46h/J+s2htlotVI3MQR7oSLxxnyMyJCL5JmUdZGmRqlJ8Rdq+GIncz/Ic2Pt1npZ0ddZvMVww","a":"aSq+tTAiN2rMR+Zpjirt2PEKxgzKFfZOAK+z6Z8WVVCKCGQLr68RZVNyRhZehZPGc2MWu6BLqO6jX7KKdj7sXvxNvD8NQ79vGi57oouY6ZLt23ujOrkYdysbA2y82EGwZHwu7FPI/2cgkHIP2KmV1tdl","k":"p+WXkK1x3ROqZLW2tJIa6LfPyqzC3Cf3SEtOxhMaPTJdVItR"},{"i":"04","s":"2OP9aAhhE0nxCpNE6IQnSg==","v":"Pfddte1OEML/fObq","c":"Y0QLck9oQx4rtRAEWPPppla33x0GH5mpIzzrlsmCwoHJfUWx+h/lCpqgaIJdauoyXtTuIC/3Koq+/VG/JBSu54ZanVdfaWcQJgnl9HFM","a":"daze+R2OLl0ovXYUys4ZrEyC7uiYemycyJ9r5aBjiOKcyE1pvMzzql3RUW4XOyNkSFTEdVQESq+zsNoa3m/wR2PhYLIzcEdJkgVvzuxTEs3Ga58H5ljBA2xt","k":"G3wwk8tQYv3in9LWxiF3UANoZaKBsZvBBkpJbzEFLVblf5Mk"},{"i":"05","s":"xobICdNEKPr/Qz+qBl9xRg==","v":"HIAt2BV15u+GYPAT","c":"dhf42s40gMwJ7Zdhd385KcZMiUrEg5Zn82pIlzBbboieKWyWRfKrJ9EZ1cE86chUJFyfQYk+WDrOa6IqNs/QrTGht4AvtXWoyIFmJmZ/UUz7depNrQfzrbfLPlEd","a":"ULJTt3O/HUv5i/YKXj4wfY6iu4srXvZ8UoihbXIM00D+9J5OO//ni9eYiRq3as6Q9ElTNeFyAshr2eSaS1bLdt5m+1pMTNpQfqK8OPo67TgNASGmGJoPEe4uIg9c0vSbTQ/wA+wcTEjo","k":"5Awvgmf1XIAsvwNEIBWakA4fEW1uZvl3cL6MJSsAjDWq+fiS"},{"i":"06","s":"oWROYpgE58VPHTIKPDU/uQ==","v":"OEVY/gpl2Zvx4VuY","c":"hFngwGvODS8G1lbQfdbEuyFk6YXtpg5zKfIEiPX3E+7Wp3BZI3taKxhIRfRZKwwAvQZp0GbV","a":"CL4jKK/2PdLnPCcLPUbJ/XoCHUdcj6/wETFSn0lnm1je/V5zrMM1kDcHlx5oDLW3JDqfQSdOvzEHJJXL71ig+yGc","k":"PVsgsGG5qWU0gYRbfpELvpiL8aVkDgT7vkbso8QnBKYJl1kX"},{"i":"07","s":"/UhrfUTBlygx4ZxWWYTUxg==","v":"sNq81a+N/9dJm49E","c":"KwJXOTI/UoY5dG0lKsIvjx6yfNIQ36fuTZ6MYLhNCN2aavkD2ZrNrXQtvUXblv865vAZ0Vo6","a":"XZG6iNRtlkwTVq4NiTQ8pizSxtQMQ9Iy82LmKDJDP0oXLKNlaSlWJowb0DYJhj4agF/xKv/oWx/K+ahcg592divf","k":"LZJNup76YCNtFNWGyafcZz3P9VSTRl8L3r7gMoWoJU4jk/MB"},{"i":"08","s":"IUfBoCFPDHqclrsM6hHDOA==","v":"d5ujPxWTgA+UpZn+","c":"GbnjCv2k9wJN1gIOg146ub9psCl0F9yaXY95VZ42SOBb7zhUEeNFzJycTzwkaA==","a":"x/0D1QoLCskZ9HnNJA25LET5+qdDzYvzIq/EbI1EAuZpJNzBCVHicYVCm0NBMGgnB/xD2lMjeBiOew==","k":"IpiSFx/TFJ69qJr8GTeY0jvPnAFid18dej1xaVnpLWEZy7Dj"},{"i":"09","s":"L+dnZfBNewQtX2G/WEApag==","v":"n9PISAmRcUwzrZv/","c":"od1186fHt5/ZpHk6YtmZK8g+7bRWiJfoj72IqQpysbokoPacLgfkRV4DbwT0+f62Cvl1xM8=","a":"4QPerwm73fxaQemYk8neVDtIFNeIfD1GPSykYYuCLYv3SfKEZDYAOsU91NZ3z4DliZOnfICrr3060dM/rdO5mfI=","k":"95gtTHkbzEtWEOzdx1eG65zP0+g6k/9mvpWjZHZ3h+RaLPoY"},{"i":"10","s":"T1KSby4NwPOXRmbxbgGKhg==","v":"BscODsv1k1nbaEvf","c":"wBB5vQoSgT4bOqOiVQI4xzCTrStKadV6I6OlNiIRgupv6Nx53yTvCdT3hGU=","a":"/JYqOIQDWXRPLjMQXJkIw85JiB7E4TkJCE58BHm+hIWdKr3Nrex7x8ZqofnPmoqHdcVyBlxGoVQ=","k":"w73DcIpAvfkM6qGZXC/NvZB9XvoaUBfO2djz92K97Xstj0nu"},{"i":"11","s":"sCMmLXv+WQGCzXrUK6+I+A==","v":"8xAQxjqp/dS45Qx6","c":"u+eWtBSKfmwuTocehJqyXv9w/wu5f4DgDD70WtBHsGgbnJeVrGb/eP6GMo3CRp6QNIO9b71z","a":"aE/M9acfv5Nmfc831WFTsTv+yjgk2PbEibSzY16b6qn+3hCusprBR/UFfPzVQra+/lmCa07CA8H9fApmm2bo68hD","k":"m5oJg7qXnMVSwSrVTxeboYIoHzXG+nk8LTNLhLYYytOOxhfz"},{"i":"12","s":"BEWso96JvHhcmuvDGHztWQ==","v":"/8PFfc4KeO3iEzlc","c":"ddyob10WBOVwB8BWNCOG7q9jlmyOJ9sLPAQ8CE29pifwKn1fwpnkWzIHOif/SYnr","a":"0KC53ZD0DQFwvStEQoOkXx8oXfFVQpizREXl5cmc8eA0MKu0j/FNkZrL2R5B/29LORHy59vVhX//8jK3","k":"iDlbJ7dwz5Q9qoaO1DU7SUorFshqWxTLpgrUcaNoCax789hk"},{"i":"13","s":"zPHX09Ao4W4dbW0AJtdcuQ==","v":"V+azdt+h90RlQcx1","c":"kFtnoF/ajbM5puRbWeVpnPMtxxqgLCHQ4AZTMQMO8LWnnkZlF8MS0uDcmfG69PGpJahPZA==","a":"FmumV0v11HM5FURNbY3IZfRWu8o6lVXJ8t0lNnIU9YQUzsc2/q4voLltS7Ygz2gf1squDymli0Styvtt79vnhA==","k":"7F8lmUtqG1ceghuqNkebn3im8MMnEeD0jBlCu+FytDou9aiA"},{"i":"14","s":"YCk8mHjHm2StZo7bpcNARQ==","v":"QONVBVFgRqlhrNWX","c":"kXHpWux+RTMemjmTe9kkxGevAKwuAlg7Z71hKE9ePfcAh1LcMqzCOAjNCpO6MMAg","a":"fTuyQmYtcSnLVD4kTPfC1pZ+VKnHcmddpADG/F2Bnp/9mAOBO1Za2lmnw2vUA+OaxFQ2qMqp1PEDb33J","k":"if7maic4hd2e+EWH4bdckbvqLfE6wj4OtiEgvTE2CnjWekHo"},{"i":"15","s":"UCZsW7K5EaVHN8qgCk+2cw==","v":"EJC3uum7pwGYX+H4","c":"wjj8meAos2KWE2GGyZF0rLCnl1onhQ09Cv7MLS8Q2mtaeC4WHTxoUKC9/2FU9NxnCtky1xcD56erhSH+cGrQMn/o","a":"HyGJE7uLcA0F+PFTuOW4St/f1dJIaQzRQXWXHSNBCETgZozcTo47HVGDCf12u5oGD2K7ONNxFaCFYvDK0rYWx4yeGARH3Tjvy1zEgC9p","k":"P5Lcy0xn9YjGbRsVwi+hY49162E8WNPsw8vRBiHgTFWbCh+3"},{"i":"16","s":"74GOq2QU0MNAnuEWrsYFLw==","v":"sehltXQtQ4dkCQWq","c":"71berYxFv3IglX8djRlrXJ5ANOjSmB3nIUOZWAsCEzI3eM03T9a6T7Xqa4rXW7WFbaxfqpcNxLG9mw==","a":"CsLxPgaFj2N5uI06JHB6YpSyEYiV0UcfkD9LUUMUcTRhEFHEdg0+SmlRpA459iS8Sx4141cdqoUU/ODzl5SRIJF2l8gbZA==","k":"BIAnni7o/5HWF4mdj2M9gzyWegU67seJmORFzkk58LGXaO59"},{"i":"17","s":"fWy5sHw+ltbF7ywVNO9zRw==","v":"MKuQH4hO4NSja/KB","c":"Vnp4t0+k/3NXZB6H9BXbOWby6V81a7uJydxTKrB8NPyL4+dY337IYlB8mshxf9eiukgeV6fT4wGqeQ==","a":"kPuUDlLqRGTXfK560LMSPq8KAHkIvDjsgKFhJJteEPL/1Gmc1cU2Rs2/S4W5SChbMrFR1TAwYhce8pGG30WTGNE99iipWg==","k":"xpggyWHQwkUX03QdwEIQtIuMxeA9IXJgsGXB4s4KB6bvD45N"},{"i":"18","s":"OOEOWzv1g92ZrQ2RqymJUA==","v":"Ya8vVeRosaX86HT7","c":"21FrkG7x/rQG8wvhyFLkz+jSG9dSe9bebOE0gmPzucf+GIJ0CbgdeciXcUncO00pNvS+m94hmeni2Q==","a":"jb2L/WrWiLfBCg0p5UA3S42vpywM7C07No9VY8AgX+yQo2MMaILZMpJ6dBEk5LWFuojs0R/Fchv2t0X8Op0J2B1mZqDifw==","k":"k6gnwO1UMZwXPYru7Fd3ZQmmm2t6urMopO2rrqOOyY9BnViI","r":"admin"},{"i":"19","s":"4R65M+wiMwcgFZLJM1gdVA==","v":"i8d4heDcVT9MvdIF","c":"ftlyUJoxOJW9fcsxHjS4cLj9M1NmSm5MX74YkHGLEPkZz0/J0+94xrICfnRWMyFN1j2r0+Ta","a":"M9C09YqSx9FEm12dXCdbAReg5tl/X8FA+Ma7UmbrMssTyNbeZ+vm9A5LRTxsChiB0loiU+xyNdfolbtLYwCzlpZ/","k":"6QLudlRaAwy+fLg/hKA3pFVZQUpn9y2D/xokWfUfORCW5G1W"},{"i":"20","s":"xln0qw1hQFddeh+9shUdFQ==","v":"Y7KIFFbYwKhK28wn","c":"nvhphttoAB70yoLALSDm4b6JqMRaI4gClwkSzjH53a+6HwNMzitPlw61Pr1wq6jXkU2uUZbqHv9UmCzj","a":"kOITCbILy3m/dfGzvDBmzOPDkidhh79kpw5o5vl/BI69WqYAextDpH9bTWmQOFIMFHZ+rHuH2augv5VIf/ShW6r4uxiVUGBn","k":"51t0hyn4jxrtEHvkHpe49FoUJ9gkohqhhi+fBpmj/7n13huD"},{"i":"21","s":"7njC318Yye5rjf1cSYTvkg==","v":"FGmdqQpxjwspk4UF","c":"4kn7oDq7zCC9OWhkSNWGF550fMLGDYc1mI5CEI5FcJKxnZKvgOZReqpCBWafnw==","a":"B3rhPzJ0q3zgDVclFgUXpJ4ojXpWUk0aSvL3bygaKxsiAIj7q3Ad/0Qn2RvOQG5btWtaeKxNCYVyfw==","k":"tHwoehHWqLb0p+wTbhqAezRZuTXXUXhZQqyJ2eg6WOYYeftO"},{"i":"22","s":"1UuzSyn69LX+/yq7GqF6ow==","v":"vmYs7HngTjPA2p7V","c":"RfUn/4qBnZ1i+T2N3o0qc1gst8zVPN48Rcpk7MffGJcSyTTUEznzGl200gJtyeHC","a":"9F4jnA8zLXrZjnHNlKL6QL+9YRbc4RHntf/trdvTQcqv5IkB5S2uYyNREO0Tdp4+9X1+OXqdseT/vcO0","k":"NeY+ctea/TIO5Q/aoLkqoUDzwVXraC617xzwTQKZ5FXrAo1w"},{"i":"23","s":"ec0M5/JwYk9h7dibQuV9RA==","v":"bBb086RxPmf+ZUk3","c":"mPsVOJy3QXRa72gYCbtw4RvatKmvCGu9m8cHKkX0zVajdL5N/0NbhgQpK0ayKHjlQWdArsd8","a":"tTGsvc/FKxFNXvV74sC8EUuYn4dGJ05i1EAtWKSnBQLFD22t/Qrukf6QA49DIb/J9uRcx0uIJHjbshhXha/U798X","k":"hT1a9JQtrwb+lX55zT4hwE5CG0mda2nzLrsBZS0M+VsSzrnQ"},{"i":"24","s":"rma/ZDI7F2XST1iYBQolJg==","v":"UHDAUHo1/zAlRzoE","c":"tIHxBTy7DiDfnX/pZaIAbXSVvDGa254GIUG/COVxccBEsgAAKGaDMEIMzgfWL663/+gCKw==","a":"VkJ3J2zziIowvov5zH1pqjynykeiyZZc1E7zebGATclUq8Ac8J4hOBDGutIcmUazGjmazWHuDOpG+TjPPjeTWg==","k":"AkSBIALMN3NZlBZi9ouSmfHdCHtu5E7WBdhLG6CdzFqdYffe"},{"i":"25","s":"kcB5Slsvb2ZBOCZ/EanDrQ==","v":"bYigJ7HaKfVrtnii","c":"PuO3gFz9BqEVuNWZN6qBma7T16WLoXpjRVit+kzMrBm1jHj3nkqdc4bA7lOIFDPy","a":"jww01NrxIpPuHGG/10mf7dD7jfivgjAnk2t++PMoMq6dfrx4B2xHdT67wwxQ0dme0o9pKyPAXN+R80zI","k":"dcl4L32KEg70icJMIrr9MW2B++9lN08RWc8zJxlQwY+LZ/KN"},{"i":"26","s":"pMh7yQh0K/MLPZMhe7CzHw==","v":"FCSPIKnOkzNrKUxf","c":"+OB4q5JJi+8N5TdJjShvvIhfI3QNzIJLSe9yWa9AwobnIQEjcmDY4LVxbiGRna4/","a":"v1vcHplG8xd+T0d1jRP4Uazsd6U7Dv7ZJbbh8bcK3AcZHMpVZqgVeoI31AKGQ9/IBGCQfztVGBRTxtdB","k":"cy88wSv2oPYvcu0OTt0VFt1kHI2U2VJ/i1dbwpDb/5D70COe"},{"i":"27","s":"vvbkXOfLhHTR6EeLeMd+5Q==","v":"/YJEc0Cf5HqMX2mo","c":"dLkOy/qjlTwgSu8o+mRCOZAk2tgCUcwclm6jmI9sR5VZZfaF/cOYWBkcCiXWYhpN","a":"glboSlQtBOUqSmL4+0wGNL/0xyGuhzmykO5hn87qlK9L6RZRpEpcAkOl+3lBrytF8ncIm4AyjcuEmqkp","k":"Y7tX4MxjsVQHy9hIL9l8ZohY2rVjuLTQhougxK2EDAB8OgC3"},{"i":"28","s":"eahnHqmsz+v+bNSizfmorg==","v":"TKuLuYB1qz+Cgm3J","c":"5mCT1WiJDpqST/sCP1wLR+YGCJdi9oc1HzNzgHkVjk7q1lp0klcxrf4CBMN8Q2fv","a":"Yya+hbvxfqwWt9QCAc821nWUq4UzQqLS5KccqAwvXyAFyQ/DKKlgIPgig4K1qfHH9FW5HJjQ4r0DHpUu","k":"SaTv1InxcPPAFaAI8laKyQ+/vSRqNOrNlGTZWfqgnE5pBTIT"},{"i":"29","s":"cAK8Y2EU6YetHT74yhPG4A==","v":"bqKkHwUYyH2ugm/v","c":"PtpqqBU/7DvVvoBEx+dmmcriKx6LSriM84uCbdy+LPozwwZS5/I7oAJHZeTBPdsW","a":"bSf4StVG8EfLezcGJPDC3LIIqztt//mC1Oa58ER+RtWVylaS2DhnZUAyyJJqqpNNoHgZ3aH9ZH6OFLcc","k":"HUpkb5OMjwksiSN2DwtGRkpGnLJM2fI9zyY1kGfzgdH8Y+sM"},{"i":"30","s":"n2ZhCp7NKoAB5ZTq1Z+1Cw==","v":"Qq9LsoGTZlHSzhGP","c":"GFshKu0rmbPAPzXO5YQocXgo2hJyfvxJSR4gceGE66ULgBG4MbX7mHZQ4Iu5zk2V","a":"fRrgRqJGZhFXFSe1zN9YbMS5jhbOTvMF9l4CzCZPfzJxdSBITeYM9Q4XYVsKSagm9ejG62wQhXOGI0IM","k":"pUJyw/FvR5vxk+z7hnaYd+pr2IM2AqrcYvUDcGsZFsh+w63W"},{"i":"31","s":"24kcw5OdC+o2+2GM9FoVhQ==","v":"QuMeXbVpgxn36c6g","c":"2F8w2mSCqx1CkZrDS6ejlYLu75VFUnynl/WZPwJfRTgiXTFHe49sDcAAY+xvEQ==","a":"iNiT9Wb9ykDY/4261oSS2CfHN8zfZkQjohpw+ZGIao/KS83z4tRfGnzdifu/VTaXsyIymjq4hPqwyQ==","k":"Xuzb3lwJ44He7u813HEBp29WV1rX8nOzV7t8pnKpcYF0xB1N"},{"i":"32","s":"dKMa6cM3A0pjT7N2I6ZN7A==","v":"Q7GbqEc4XZfnzK6F","c":"+iNEl2+gX9GI59PrfntxD2XAJSkkoPQYoHxYgDw8IJmhqp5jpWt7wRn1C4zJxuPEmiygaf90","a":"JQhUCvq8p4ib5J/mVaT+9o6Dxjgv2DDY3sqongSZFnzFVLJBG5D8AWQAkAAT7zDtEOxwAjOyQLavlMdL6HeOwbjG","k":"+0AxWEvI5OQGuut+vaKbtnXVHt9X2qlPsjRbozo4/88EfKwq"},{"i":"33","s":"9zRuaQhiHtmDeu2ZTGDFdg==","v":"lWqGjDCM9FTKHkIf","c":"8uw23FIBbi6KUIOYiDC4Lwjje87vmyHEeG0+nuf2y29PnfLKSCegKO4om/1DL7Gs","a":"OoWLoef8lVi9jIio2JmR87BIubRepQu8uofDb15VvE595A+j2/3wp6vgdf78d69mDokwVRcOZHD88fL4","k":"TorR5JRcB4XCDiu3Q0NzFwV2v7EGQL4vD8cBbYSQY1H59bdI"},{"i":"34","s":"ZEGxqG1M8fFKcYBSZDgEZw==","v":"w1gjo9HGHKErZE7A","c":"/chI+dUodGmpCvgqNi+0xG3Azue5tVYwpGzvuya3KKBYImyqGb7HSOjVdnJMPwZS","a":"rKUBoCjQjwUkWZDG7pylJxLOiQejN1T8dUlzznEb7ln+AQIBNoHqNletifFb9lic9yWrIBwRIMkBr1EF","k":"J3aGet7YSHofBbsG396l/WOU8/nQKiQrQjRviKU7gNn+CXbb"},{"i":"35","s":"fGv4+Kq6OecXfWKYuyRF/Q==","v":"20mIyQr0+ykwZ7Hr","c":"om0p0oxsWv0ctWeH9tsyCKNs3IzFjoRFgtQHF4yH6CJv/S8+s5nZQl5GEfIM0gSG","a":"4aJDyvSJG5sEVM44PxNnTZEgE8q1MQsIV8N1sT4vv82Jnnkl6QzjbRkkROxJmvJ3AquYZgwpN4d7k5Oz","k":"zzfzgCaN/2IVz3K/LsRcLnQcCzcbdZ0ePfD/wKmHYOZmJyxA"},{"i":"36","s":"P74UOAD8zd+CXBrf11BsLg==","v":"Dk6Md7Ux9io41CzI","c":"oGCg8XbWCcqwSc6Qv5tntao1grUaSN3Y1f5YBxNm4+lYARfUs8AQmwRUY0RCe0YVxCrYlJ9g","a":"FmRlQKjOM6e1Pnj9gtgrny4ZiK629iXsofh0WhN2bYK4+u/tQCtgY+gg4SJqd33Ihc4mtilAwXQYWT1R0F+riKwZ","k":"oZt5FUYQD/TY3b0X1WSnX//Rqx8goasnUUDpRgKWOs8Xmn98"}];
+const AL32="23456789ABCDEFGHJKMNPQRSTUVWXYZ";
+const newSecret=()=>Array.from(crypto.getRandomValues(new Uint8Array(8)),b=>AL32[b%AL32.length]).join("");
+const fmtCode=(i,s)=>i+"-"+s.slice(0,4)+"-"+s.slice(4);
+async function admKey(){if(!ADM.key)ADM.key=await deriveKey(ME.secret,ADM_SALT,["encrypt","decrypt"]);return ADM.key}
+async function admEnc(t){const iv=crypto.getRandomValues(new Uint8Array(12));const ct=new Uint8Array(await crypto.subtle.encrypt({name:"AES-GCM",iv},await admKey(),new TextEncoder().encode(t)));const o=new Uint8Array(12+ct.length);o.set(iv);o.set(ct,12);return _tob64(o)}
+async function admDec(b){try{const u=_b64(b);return new TextDecoder().decode(await crypto.subtle.decrypt({name:"AES-GCM",iv:u.slice(0,12)},await admKey(),u.slice(12)))}catch(e){return""}}
+function admMsg(t,bad){const m=$("admMsg");m.textContent=t||"";m.style.color=bad?"var(--red)":"var(--done-ink)"}
+async function admLogin(pw){
+  const r=await fetch("https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key="+FB.k,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({email:"appmaill03@gmail.com",password:pw,returnSecureToken:true})});
+  const j=await r.json().catch(()=>({}));
+  if(!r.ok||!j.idToken)throw new Error("كلمة سر المشرف غير صحيحة");
+  ADM.token=j.idToken;ADM.exp=Date.now()+Math.max(60,(+j.expiresIn||3600)-120)*1000;
+}
+function admNeedLogin(){if(!ADM.token||Date.now()>ADM.exp){ADM.token="";$("admLogin").hidden=false;$("admMain").hidden=true;admMsg("انتهت الجلسة، أعد إدخال كلمة سر المشرف",true);return true}return false}
+async function fsWrite(en){
+  const f={};["i","s","v","c","a","k","r"].forEach(k=>{if(en[k])f[k]={stringValue:en[k]}});
+  const r=await fetch(FS+"/"+en.i+"?key="+FB.k,{method:"PATCH",headers:{"Content-Type":"application/json",Authorization:"Bearer "+ADM.token},body:JSON.stringify({fields:f})});
+  if(!r.ok)throw new Error(r.status===403?"رُفضت الكتابة — تأكد من نشر قواعد Firebase":"تعذّر الحفظ ("+r.status+")");
+}
+async function fsDelete(id){
+  const r=await fetch(FS+"/"+id+"?key="+FB.k,{method:"DELETE",headers:{Authorization:"Bearer "+ADM.token}});
+  if(!r.ok)throw new Error("تعذّر الإيقاف ("+r.status+")");
+}
+async function makeEntry(id,label,secret,role){
+  const salt=crypto.getRandomValues(new Uint8Array(16)),iv=crypto.getRandomValues(new Uint8Array(12));
+  const k=await deriveKey(secret,salt,["encrypt"]);
+  const ct=new Uint8Array(await crypto.subtle.encrypt({name:"AES-GCM",iv},k,new TextEncoder().encode(label)));
+  return {i:id,s:_tob64(salt),v:_tob64(iv),c:_tob64(ct),a:await admEnc(label),k:await admEnc(secret),r:role||""};
+}
+async function admRender(){
+  const box=$("admList");box.innerHTML="<p style='color:var(--muted)'>جارٍ التحميل…</p>";
+  await loadAuth();
+  const list=AUTH.slice().sort((a,b)=>a.i.localeCompare(b.i));
+  $("admSeed").hidden=list.length>0;
+  $("admCount").textContent=list.length?ar(list.length)+" معلم":"";
+  box.innerHTML="";
+  for(const x of list){
+    const label=(await admDec(x.a))||"(غير معروف)",secret=await admDec(x.k),code=secret?fmtCode(x.i,secret):"";
+    const row=document.createElement("div");
+    row.style.cssText="border:1px solid var(--line);border-radius:14px;padding:10px 12px;display:grid;gap:8px;background:var(--surface)";
+    row.innerHTML="<div style='font-weight:700'>"+esc(label)+(x.r==="admin"?" <small style='color:var(--done-ink)'>(مشرف)</small>":"")+"</div><div dir='ltr' style='text-align:right;font-weight:700;letter-spacing:1px'>"+esc(code||"—")+"</div><div style='display:flex;gap:6px;flex-wrap:wrap'></div>";
+    const bar=row.lastChild;
+    const mk=(t,fn,bg)=>{const b=document.createElement("button");b.type="button";b.textContent=t;b.style.cssText="padding:7px 12px;font-size:.85em;background:"+(bg||"var(--soft)")+";color:var(--ink)";b.onclick=fn;bar.appendChild(b)};
+    mk("نسخ الرسالة",async()=>{try{await navigator.clipboard.writeText("السلام عليكم ورحمة الله\nرقمك السري للدخول إلى «ساعي»:\n"+code+"\nالرابط: https://tasks.weyasmo.com\nالرقم خاص بك فلا تشاركه مع أحد.");admMsg("تم نسخ الرسالة لـ "+label)}catch(e){admMsg("تعذّر النسخ",true)}});
+    mk("رقم جديد",async()=>{
+      if(admNeedLogin())return;
+      if(!confirm("إصدار رقم جديد لـ "+label+"؟ سيتوقف رقمه القديم فورًا."))return;
+      try{admMsg("جارٍ الإصدار…");await fsWrite(await makeEntry(x.i,label,newSecret(),x.r));await admRender();admMsg("صدر رقم جديد لـ "+label)}catch(e){admMsg(e.message,true)}
+    });
+    if(x.r!=="admin")mk("إيقاف",async()=>{
+      if(admNeedLogin())return;
+      if(!confirm("إيقاف "+label+"؟ لن يستطيع الدخول بعد الآن."))return;
+      try{await fsDelete(x.i);await admRender();admMsg("تم إيقاف "+label)}catch(e){admMsg(e.message,true)}
+    },"#fde8e8");
+    box.appendChild(row);
+  }
+}
+$("admBtn").onclick=()=>{$("adm").hidden=false;if(ADM.token&&Date.now()<ADM.exp){$("admLogin").hidden=true;$("admMain").hidden=false;admRender()}else{$("admLogin").hidden=false;$("admMain").hidden=true}};
+$("admClose").onclick=()=>{$("adm").hidden=true};
+$("admLoginForm").addEventListener("submit",async e=>{
+  e.preventDefault();const b=$("admLoginBtn");b.disabled=true;admMsg("جارٍ التحقق…");
+  try{await admLogin($("admPw").value);$("admPw").value="";$("admLogin").hidden=true;$("admMain").hidden=false;admMsg("");await admRender()}catch(er){admMsg(er.message,true)}
+  b.disabled=false;
+});
+$("admAddForm").addEventListener("submit",async e=>{
+  e.preventDefault();if(admNeedLogin())return;
+  const name=$("admName").value.trim(),role=$("admRole").value.trim();if(!name){admMsg("اكتب اسم المعلم",true);return}
+  const used=new Set(AUTH.map(x=>x.i));let id="";for(let n=1;n<100;n++){const c=String(n).padStart(2,"0");if(!used.has(c)){id=c;break}}
+  if(!id){admMsg("امتلأت القائمة",true);return}
+  try{admMsg("جارٍ الإضافة…");await fsWrite(await makeEntry(id,role?name+" | "+role:name,newSecret(),""));$("admName").value="";$("admRole").value="";await admRender();admMsg("أُضيف "+name+" — انسخ رسالته من القائمة")}catch(er){admMsg(er.message,true)}
+});
+$("admSeed").onclick=async()=>{
+  if(admNeedLogin())return;
+  if(!confirm("استيراد المعلمين الحاليين ("+ar(SEED.length)+") بأرقامهم المحفوظة؟"))return;
+  try{for(let n=0;n<SEED.length;n++){admMsg("جارٍ الاستيراد "+ar(n+1)+" / "+ar(SEED.length)+"…");await fsWrite(SEED[n])}await admRender();admMsg("تم الاستيراد")}catch(er){admMsg(er.message,true)}
+};
 (async()=>{
   const saved=store.get("p_auth","");
   if(saved&&await enterWith(saved))return;
