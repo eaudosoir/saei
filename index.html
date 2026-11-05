@@ -187,6 +187,9 @@ footer{text-align:center;color:var(--muted);font-size:.8rem}
 
 /* قوائم مميزة ومتدرجة */
 .nav .prev{display:none!important}
+.logfab{position:fixed;bottom:calc(20px + env(safe-area-inset-bottom,0px));inset-inline-start:16px;width:62px;height:62px;border-radius:50%;padding:0;background:linear-gradient(135deg,#f97316,#fb923c);color:#fff;box-shadow:0 14px 28px -10px rgba(249,115,22,.75);z-index:15}
+.logfab .badge{position:absolute;top:-4px;inset-inline-end:-4px;min-width:24px;height:24px;padding:0 6px;border-radius:99px;background:#fff;color:#c2410c;font-size:.8rem;display:grid;place-items:center;box-shadow:0 2px 6px rgba(0,0,0,.25)}
+.logsheet{position:fixed;left:0;right:0;bottom:0;max-width:620px;margin:0 auto;max-height:75vh;overflow:auto;z-index:25;border-radius:26px 26px 0 0;border:0;border-top:6px solid #f97316;box-shadow:0 -20px 40px -20px rgba(0,0,0,.4)}
 .step.lock{display:none}
 .step:not(.seen):not(.open):not(#s-task){display:none}
 .step{--sc:var(--accent);--sc2:var(--accent2);border-inline-start:6px solid var(--sc);background:linear-gradient(180deg,color-mix(in srgb,var(--sc) 9%,var(--surface)),var(--surface) 110px)}
@@ -352,8 +355,9 @@ footer{text-align:center;color:var(--muted);font-size:.8rem}
     </div>
   </section>
 
-  <section>
-    <h2>سجل المهام <span class="end" id="logn"></span></h2>
+  <button type="button" id="logFab" class="logfab" aria-label="سجل المهام" title="سجل المهام"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span class="badge" id="logBadge" hidden></span></button>
+  <section id="logSec" class="logsheet" hidden>
+    <h2>سجل المهام <span class="end" id="logn"></span><button type="button" id="logClose" class="ghost small">إغلاق</button></h2>
     <div class="log" id="log"></div>
   </section>
 
@@ -665,14 +669,14 @@ function renderSend(){
 }
 function renderLog(){
   const L=$("log");L.innerHTML="";
-  $("logn").textContent=log.length?ar(log.length):"";
+  $("logn").textContent=log.length?ar(log.length):"";$("logBadge").textContent=log.length?ar(log.length):"";$("logBadge").hidden=!log.length;
   if(!log.length){L.innerHTML='<p class="hint">تظهر هنا المهام المرسلة لإعادة استخدامها.</p>';return}
   log.forEach((it,i)=>{
     const d=document.createElement("div");d.className="it";
     d.innerHTML="<b>"+esc(it.type)+" · "+esc(nm(it.who))+"</b><div>"+esc(it.body.length>90?it.body.slice(0,90)+"…":it.body)+"</div><div class='meta'>"+esc(ar(GEN(it.type)?"":it.when))+" · "+esc(ar(it.groups.length))+" قروبات"+(it.people&&it.people.length?" · "+esc(ar(it.people.length))+" أفراد":"")+"</div>";
     const r=document.createElement("div");r.className="row";
     const u=document.createElement("button");u.type="button";u.className="ghost small";u.textContent="استخدام مرة أخرى";
-    u.onclick=()=>{pushUndo("تحميل مهمة سابقة");$("tpl").value=it.type==="تنبيه عام"?"مهمة عامة":it.type;$("msg").value=it.body;if(cfg.t.includes(it.who))$("teacher").value=it.who;picked=it.groups.filter(n=>cfg.g.some(g=>g[0]===n));store.set("p_picked",picked);pickedP=(it.people||[]).filter(ph=>(cfg.p||[]).some(q=>q[1]===ph));store.set("p_pickedP",pickedP);setPrio(it.prio>=0?it.prio:0);fillGroups();fillPeople();renderSend();render();openStep("s-task");toast("تم تحميل المهمة")};
+    u.onclick=()=>{pushUndo("تحميل مهمة سابقة");$("tpl").value=it.type==="تنبيه عام"?"مهمة عامة":it.type;$("msg").value=it.body;if(cfg.t.includes(it.who))$("teacher").value=it.who;picked=it.groups.filter(n=>cfg.g.some(g=>g[0]===n));store.set("p_picked",picked);pickedP=(it.people||[]).filter(ph=>(cfg.p||[]).some(q=>q[1]===ph));store.set("p_pickedP",pickedP);setPrio(it.prio>=0?it.prio:0);fillGroups();fillPeople();renderSend();render();openStep("s-task");$("logSec").hidden=true;toast("تم تحميل المهمة")};
     const x=document.createElement("button");x.type="button";x.className="ghost small";x.textContent="حذف";
     x.onclick=()=>{pushUndo("حذف مهمة من السجل");log.splice(i,1);store.set("p_log",log);renderLog()};
     r.append(u,x);d.appendChild(r);L.appendChild(d);
@@ -942,6 +946,9 @@ if((isIOS||isAndroid)&&!isStandalone()&&!store.get("p_installed",0)){$("installB
 if(isStandalone())store.set("p_installed",1);
 fillTeachers();fillGroups();fillPeople();fillSetup();renderSend();renderLog();render();
 openStep($("teacher").value?"s-task":"s-teacher",false);
+$("logFab").onclick=()=>{$("logSec").hidden=!$("logSec").hidden};
+$("logClose").onclick=()=>{$("logSec").hidden=true};
+addEventListener("keydown",e=>{if(e.key==="Escape")$("logSec").hidden=true});
 /* ---------- دخول المعلم بالرقم السري + لوحة المعلمين ---------- */
 const FB={k:"AIzaSyBhtCzp3axk_JYgbtI3Kf3wq9a_O-5F-K0",p:"fasli-873ee"};
 const FS="https://firestore.googleapis.com/v1/projects/"+FB.p+"/databases/(default)/documents/saei_teachers";
