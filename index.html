@@ -188,6 +188,7 @@ footer{text-align:center;color:var(--muted);font-size:.8rem}
 /* قوائم مميزة ومتدرجة */
 .nav .prev{display:none!important}
 .step.lock{display:none}
+.step:not(.seen):not(.open):not(#s-task){display:none}
 .step{--sc:var(--accent);--sc2:var(--accent2);border-inline-start:6px solid var(--sc);background:linear-gradient(180deg,color-mix(in srgb,var(--sc) 9%,var(--surface)),var(--surface) 110px)}
 #s-task{--sc:#0d9488;--sc2:#06b6d4}
 #s-groups{--sc:#2563eb;--sc2:#60a5fa}
@@ -779,7 +780,7 @@ function updateSteps(){
   $("s-task").classList.toggle("done",!!b&&!!$("tpl").value&&prio>=0);
   $("s-groups").classList.toggle("done",(picked.length+pickedP.length)>0);
   $("whenSec").classList.toggle("done",(picked.length+pickedP.length)>0&&$("s-task").classList.contains("done"));
-  {const v=visibleSteps();let ok=true;v.forEach(id=>{const el=$(id);el.classList.toggle("lock",!ok);if(ok&&!el.classList.contains("done"))ok=false});
+  {const v=visibleSteps();let ok=true;v.forEach(id=>{const el=$(id);el.classList.toggle("lock",!ok);if(!ok)el.classList.remove("seen");if(el.classList.contains("open"))el.classList.add("seen");if(ok&&!el.classList.contains("done"))ok=false});
   const op=v.find(id=>$(id).classList.contains("open"));
   if(op&&$(op).classList.contains("lock")){const t=v.find(id=>!$(id).classList.contains("done"));if(t&&t!==op){$(op).classList.remove("open");$(t).classList.add("open");curStep=t}}}
   try{updateProg()}catch(e){}
