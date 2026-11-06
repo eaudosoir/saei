@@ -949,6 +949,14 @@ openStep($("teacher").value?"s-task":"s-teacher",false);
 $("logFab").onclick=()=>{$("logSec").hidden=!$("logSec").hidden};
 $("logClose").onclick=()=>{$("logSec").hidden=true};
 addEventListener("keydown",e=>{if(e.key==="Escape")$("logSec").hidden=true});
+/* انطواء القائمة تلقائيًا عند اكتمالها */
+const _adv={};
+function autoAdvance(id,delay){clearTimeout(_adv[id]);_adv[id]=setTimeout(()=>{const el=$(id);if(el.classList.contains("open")&&el.classList.contains("done")){const n=nextOf(id);if(n)openStep(n)}},delay)}
+$("msg").addEventListener("change",()=>autoAdvance("s-task",300));
+$("prio").addEventListener("click",()=>autoAdvance("s-task",900));
+$("groups").addEventListener("click",()=>autoAdvance("s-groups",2500));
+$("people").addEventListener("click",()=>autoAdvance("s-groups",2500));
+["dt","tm","whenLbl"].forEach(i=>$(i).addEventListener("change",()=>autoAdvance("whenSec",2000)));
 /* ---------- دخول المعلم بالرقم السري + لوحة المعلمين ---------- */
 const FB={k:"AIzaSyBhtCzp3axk_JYgbtI3Kf3wq9a_O-5F-K0",p:"fasli-873ee"};
 const FS="https://firestore.googleapis.com/v1/projects/"+FB.p+"/databases/(default)/documents/saei_teachers";
