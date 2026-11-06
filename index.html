@@ -1031,7 +1031,7 @@ async function fsWrite(en){
 }
 async function fsDelete(id){
   const r=await fetch(FS+"/"+id+"?key="+FB.k,{method:"DELETE",headers:{Authorization:"Bearer "+ADM.token}});
-  if(!r.ok)throw new Error("تعذّر الإيقاف ("+r.status+")");
+  if(!r.ok)throw new Error("تعذّر الحذف ("+r.status+")");
 }
 async function makeEntry(id,label,secret,role){
   const salt=crypto.getRandomValues(new Uint8Array(16)),iv=crypto.getRandomValues(new Uint8Array(12));
@@ -1061,10 +1061,10 @@ async function admRender(){
       if(!confirm("إصدار رقم جديد لـ "+label+"؟ سيتوقف رقمه القديم فورًا."))return;
       try{admMsg("جارٍ الإصدار…");await fsWrite(await makeEntry(x.i,label,newSecret(),x.r));await admRender();admMsg("صدر رقم جديد لـ "+label+" — اضغط «إرسال واتساب» في بطاقته")}catch(e){admMsg(e.message,true)}
     });
-    if(x.r!=="admin")mk("إيقاف",async()=>{
+    if(x.r!=="admin")mk("حذف المعلم",async()=>{
       if(admNeedLogin())return;
-      if(!confirm("إيقاف "+label+"؟ لن يستطيع الدخول بعد الآن."))return;
-      try{await fsDelete(x.i);await admRender();admMsg("تم إيقاف "+label)}catch(e){admMsg(e.message,true)}
+      if(!confirm("حذف "+label+" نهائيًا؟ سيتوقف رقمه فورًا ولن يستطيع الدخول بعد الآن."))return;
+      try{await fsDelete(x.i);await admRender();admMsg("تم حذف "+label)}catch(e){admMsg(e.message,true)}
     },"#fde8e8");
     box.appendChild(row);
   }
