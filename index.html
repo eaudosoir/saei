@@ -423,7 +423,8 @@ footer{text-align:center;color:var(--muted);font-size:.8rem}
   <form id="gateForm" autocomplete="off" style="background:var(--surface);color:var(--ink);border-radius:24px;padding:26px 22px;width:100%;max-width:380px;box-shadow:var(--shadow);display:grid;gap:14px;text-align:center">
     <h1 style="margin:0;font-size:1.7em">ساعي</h1>
     <p style="margin:0;color:var(--muted)">أدخل رقمك السري الخاص بك للدخول<br>ابتدائية القادسية</p>
-    <input id="gateCode" type="text" inputmode="text" dir="ltr" autocapitalize="characters" autocomplete="off" spellcheck="false" placeholder="00-XXXX-XXXX" style="font:inherit;font-weight:700;text-align:center;letter-spacing:2px;font-size:1.2em;padding:13px;border-radius:14px;border:2px solid var(--line);background:var(--bg);color:var(--ink)">
+    <input id="gateCode" type="password" inputmode="text" lang="en" dir="ltr" autocapitalize="characters" autocomplete="off" spellcheck="false" placeholder="00-XXXX-XXXX" style="font:inherit;font-weight:700;text-align:center;letter-spacing:2px;font-size:1.2em;padding:13px;border-radius:14px;border:2px solid var(--line);background:var(--bg);color:var(--ink)">
+    <label style="display:flex;align-items:center;gap:8px;justify-content:center;font-size:.9em;color:var(--muted);cursor:pointer"><input type="checkbox" id="gateShow" style="width:20px;height:20px"> إظهار للمعاينة</label>
     <p id="gateMsg" style="margin:0;color:var(--red);min-height:1.4em;font-weight:700"></p>
     <button type="submit" id="gateBtn" style="background:var(--grad);color:#fff;padding:13px">دخول</button>
     <p style="margin:0;color:var(--muted);font-size:.85em">نسيت رقمك؟ تواصل مع أ. عبدالله لإصدار رقم جديد.</p>
@@ -434,7 +435,8 @@ footer{text-align:center;color:var(--muted);font-size:.8rem}
     <div style="display:flex;justify-content:space-between;align-items:center"><h2 style="margin:0">لوحة المعلمين <small id="admCount" style="color:var(--muted)"></small></h2><button type="button" id="admClose" style="background:var(--soft);color:var(--ink);padding:8px 14px">إغلاق</button></div>
     <p id="admMsg" style="margin:0;min-height:1.4em;font-weight:700"></p>
     <form id="admLoginForm" autocomplete="off" style="display:grid;gap:10px;background:var(--surface);border-radius:16px;padding:14px" >
-      <div id="admLogin" style="display:grid;gap:10px"><p style="margin:0;color:var(--muted)">أدخل كلمة سر حساب المشرف (حساب فصلي: appmaill03@gmail.com)</p><input id="admPw" type="password" autocomplete="current-password" placeholder="كلمة سر المشرف" style="font:inherit;padding:12px;border-radius:12px;border:2px solid var(--line);background:var(--bg);color:var(--ink)"><button type="submit" id="admLoginBtn" style="background:var(--grad);color:#fff;padding:12px">دخول المشرف</button></div>
+      <div id="admLogin" style="display:grid;gap:10px"><p style="margin:0;color:var(--muted)">أدخل كلمة سر حساب المشرف (حساب فصلي: appmaill03@gmail.com)</p><input id="admPw" type="password" lang="en" dir="ltr" autocapitalize="none" autocomplete="current-password" placeholder="كلمة سر المشرف" style="font:inherit;padding:12px;border-radius:12px;border:2px solid var(--line);background:var(--bg);color:var(--ink)">
+    <label style="display:flex;align-items:center;gap:8px;justify-content:center;font-size:.9em;color:var(--muted);cursor:pointer"><input type="checkbox" id="admShow" style="width:20px;height:20px"> إظهار للمعاينة</label><button type="submit" id="admLoginBtn" style="background:var(--grad);color:#fff;padding:12px">دخول المشرف</button></div>
     </form>
     <div id="admMain" style="display:grid;gap:14px" hidden>
       <form id="admAddForm" autocomplete="off" style="display:grid;gap:8px;background:var(--surface);border-radius:16px;padding:14px"><b>إضافة معلم جديد</b><input id="admName" placeholder="الاسم (مثال: الأستاذ فلان)" style="font:inherit;padding:11px;border-radius:12px;border:2px solid var(--line);background:var(--bg);color:var(--ink)"><input id="admRole" placeholder="الدور (اختياري، مثال: وكيل)" style="font:inherit;padding:11px;border-radius:12px;border:2px solid var(--line);background:var(--bg);color:var(--ink)"><button type="submit" style="background:var(--grad);color:#fff;padding:11px">إضافة وتوليد رقم</button></form>
@@ -949,6 +951,9 @@ openStep($("teacher").value?"s-task":"s-teacher",false);
 $("logFab").onclick=()=>{$("logSec").hidden=!$("logSec").hidden};
 $("logClose").onclick=()=>{$("logSec").hidden=true};
 addEventListener("keydown",e=>{if(e.key==="Escape")$("logSec").hidden=true});
+$("gateCode").addEventListener("input",e=>{const v=String(en(e.target.value)).replace(/[^A-Za-z0-9-]/g,"").toUpperCase();if(v!==e.target.value)e.target.value=v});
+$("gateShow").onchange=e=>{$("gateCode").type=e.target.checked?"text":"password"};
+$("admShow").onchange=e=>{$("admPw").type=e.target.checked?"text":"password"};
 /* انطواء القائمة تلقائيًا عند اكتمالها */
 const _adv={};
 function autoAdvance(id,delay){clearTimeout(_adv[id]);_adv[id]=setTimeout(()=>{const el=$(id);if(el.classList.contains("open")&&el.classList.contains("done")){const n=nextOf(id);if(n)openStep(n)}},delay)}
