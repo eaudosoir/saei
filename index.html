@@ -974,8 +974,10 @@ async function loadAuth(){
     const r=await fetch(FS+"?pageSize=300&key="+FB.k,{cache:"no-store"});
     if(!r.ok)throw 0;
     const j=await r.json();
-    AUTH=(j.documents||[]).map(d=>{const f=d.fields||{},g=k=>(f[k]&&f[k].stringValue)||"";return{i:g("i"),s:g("s"),v:g("v"),c:g("c"),a:g("a"),k:g("k"),r:g("r")}}).filter(x=>x.i&&x.s&&x.v&&x.c);
-    if(!AUTH.length)AUTH=SEED.slice();
+    const docs=(j.documents||[]).map(d=>{const f=d.fields||{},g=k=>(f[k]&&f[k].stringValue)||"";return{i:g("i"),s:g("s"),v:g("v"),c:g("c"),a:g("a"),k:g("k"),r:g("r"),x:g("x")}});
+    const m=new Map(SEED.map(q=>[q.i,q]));
+    docs.forEach(x=>{if(!x.i)return;if(x.x)m.delete(x.i);else if(x.s&&x.v&&x.c)m.set(x.i,x)});
+    AUTH=[...m.values()];
     store.set("p_authlist",AUTH);
   }catch(e){AUTH=store.get("p_authlist",[])||[];if(!AUTH.length)AUTH=SEED.slice()}
   return AUTH;
@@ -1039,14 +1041,11 @@ async function admLogin(pw){
 }
 function admNeedLogin(){if(!ADM.token||Date.now()>ADM.exp){ADM.token="";$("admLogin").hidden=false;$("admMain").hidden=true;admMsg("انتهت الجلسة، أعد إدخال كلمة سر المشرف",true);return true}return false}
 async function fsWrite(en){
-  const f={};["i","s","v","c","a","k","r"].forEach(k=>{if(en[k])f[k]={stringValue:en[k]}});
+  const f={};["i","s","v","c","a","k","r","x"].forEach(k=>{if(en[k])f[k]={stringValue:en[k]}});
   const r=await fetch(FS+"/"+en.i+"?key="+FB.k,{method:"PATCH",headers:{"Content-Type":"application/json",Authorization:"Bearer "+ADM.token},body:JSON.stringify({fields:f})});
   if(!r.ok)throw new Error(r.status===403?"رُفضت الكتابة — تأكد من نشر قواعد Firebase":"تعذّر الحفظ ("+r.status+")");
 }
-async function fsDelete(id){
-  const r=await fetch(FS+"/"+id+"?key="+FB.k,{method:"DELETE",headers:{Authorization:"Bearer "+ADM.token}});
-  if(!r.ok)throw new Error("تعذّر الحذف ("+r.status+")");
-}
+async function fsDelete(id){await fsWrite({i:id,x:"1"})}
 async function makeEntry(id,label,secret,role){
   const salt=crypto.getRandomValues(new Uint8Array(16)),iv=crypto.getRandomValues(new Uint8Array(12));
   const k=await deriveKey(secret,salt,["encrypt"]);
