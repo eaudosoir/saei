@@ -315,7 +315,7 @@ footer{text-align:center;color:var(--muted);font-size:.8rem}
         <select id="pMove" aria-label="نقل الأسماء المحدَّدة إلى فصل" hidden></select>
         <div class="addp">
           <label>رفع قائمة أسماء من ملف</label>
-          <label class="drop" for="pFile"><span>📎 اختر ملف Excel أو CSV أو نص</span><small>الأعمدة: الاسم ثم رقم الجوال ثم الفصل (اختياري)</small></label>
+          <label class="drop" for="pFile"><span>📎 اختر ملف Excel أو CSV أو نص</span><small>الأعمدة: الاسم ثم رقم الجوال ثم الفصل (اختياري) — ويُقبل ملف نور كما هو</small></label>
           <input type="file" id="pFile" accept=".csv,.txt,.xlsx,.xls,text/csv,text/plain" hidden>
         </div>
         <div class="addp">
@@ -400,7 +400,7 @@ footer{text-align:center;color:var(--muted);font-size:.8rem}
     </details>
   </section>
 
-  <footer>تصميم: أ. عبدالله ال عواد · الإصدار ٢٧</footer>
+  <footer>تصميم: أ. عبدالله ال عواد · الإصدار ٢٨</footer>
 </div>
 <div class="scrim" id="installSheet" hidden>
   <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="insT">
@@ -475,6 +475,9 @@ function parseLines(text){
     tk.forEach((x,i)=>{if(!ph){const v=normPhone(x);if(v){ph=v;pi=i}}});
     if(!ph){bad++;return}
     let cls="";const rest=[];
+    /* ملف نور: رقم الصف ٠١٣٠=أول … ٠٦٣٠=سادس، مع رقم الفصل ١=أ ٢=ب ٣=ج */
+    const gi=tk.findIndex((x,i)=>i!==pi&&/^0[1-6]30$/.test(en(x))),si=gi<0?-1:tk.findIndex((x,i)=>i!==pi&&i!==gi&&/^[1-6]$/.test(en(x)));
+    if(gi>=0&&si>=0){const g=+en(tk[gi])[1],c=+en(tk[si]);cls=knownCls(g+" "+c)||(["أول","ثاني","ثالث","رابع","خامس","سادس"][g-1]+" "+"أبجدهو"[c-1])}
     tk.forEach((x,i)=>{
       if(i===pi)return;
       const k=knownCls(x);
@@ -485,11 +488,15 @@ function parseLines(text){
     });
     const inTok=tk[pi].replace(new RegExp("[+\\-()\\s"+DIG+"]+","g")," ").trim();
     const n=[...rest,inTok].filter(Boolean).join(" ").trim();
-    if(!list.some(q=>q[1]===ph))list.push(cls?[n,ph,cls]:[n,ph]);
+    const it=cls?[n,ph,cls]:[n,ph],ex=list.find(q=>pid(q)===pid(it));
+    if(!ex)list.push(it);else if(cls&&n&&ex[0]&&!ex[0].split(" و ").includes(n))ex[0]+=" و "+n;else if(n&&!ex[0])ex[0]=n;
   });
   return {list,bad};
 }
 const pLabel=q=>q[0]||("رقم "+q[1]);
+/* معرّف الفرد: الجوال، ومع الفصل «الجوال@الفصل» ليظهر ولي الأمر في فصل كل ابن */
+const pid=q=>q[2]?q[1]+"@"+q[2]:q[1];
+const pidPhone=id=>String(id).split("@")[0];
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const DAYS=["الأحد","الإثنين","الثلاثاء","الأربعاء","الخميس","الجمعة","السبت"];
 const GRADES=[["أول",["أ","ب"]],["ثاني",["أ","ب","ج"]],["ثالث",["أ","ب","ج"]],["رابع",["أ","ب","ج"]],["خامس",["أ","ب","ج"]],["سادس",["أ","ب","ج"]]];
@@ -577,28 +584,28 @@ function fillClsSelects(){
   if(a){const cur=a.value;a.innerHTML='<option value="">الفصل (اختياري)…</option>'+L.map(c=>'<option>'+esc(c)+'</option>').join("");if(L.includes(cur))a.value=cur}
   if(b){b.innerHTML='<option value="">نقل المحدَّدين ('+ar(pickedP.length)+') إلى فصل…</option>'+L.map(c=>'<option>'+esc(c)+'</option>').join("")+'<option value="'+NOC+'">'+NOC+'</option>';b.value="";b.hidden=!pickedP.length}
 }
-function visP(){const qs=nrm(($("pSearch")||{}).value||"");const P=cfg.p||[];return (qs?P.filter(q=>pMatch(q,qs)):P).map(q=>q[1])}
+function visP(){const qs=nrm(($("pSearch")||{}).value||"");const P=cfg.p||[];return (qs?P.filter(q=>pMatch(q,qs)):P).map(pid)}
 function fillPeople(){
   const box=$("people");box.innerHTML="";
   const P=cfg.p||[];
-  pickedP=pickedP.filter(x=>P.some(q=>q[1]===x));
+  pickedP=pickedP.filter(x=>P.some(q=>pid(q)===x));
   $("noP").hidden=P.length>0;
   const qs=nrm(($("pSearch")||{}).value||"");
   const shown=qs?P.filter(q=>pMatch(q,qs)):P;
   const fd=$("pFound");if(fd){fd.hidden=!qs;fd.textContent=shown.length?("نتائج البحث: "+ar(shown.length)+" من "+ar(P.length)):"لا توجد نتائج مطابقة"}
   const mkRow=q=>{
-    const on=pickedP.includes(q[1]),row=document.createElement("div");row.className="prow";
+    const id=pid(q),on=pickedP.includes(id),row=document.createElement("div");row.className="prow";
     const l=document.createElement("label");l.className="g"+(on?" on":"");
     l.innerHTML='<input type="checkbox"'+(on?" checked":"")+'><span>'+esc(pLabel(q))+' <small>'+esc(q[1])+'</small></span>';
     l.querySelector("input").onchange=e=>{
       pushUndo("تحديد فرد");
-      pickedP=e.target.checked?[...pickedP,q[1]]:pickedP.filter(x=>x!==q[1]);
+      pickedP=e.target.checked?[...pickedP,id]:pickedP.filter(x=>x!==id);
       store.set("p_pickedP",pickedP);fillPeople();renderSend();
     };
     const x=document.createElement("button");x.type="button";x.className="xbtn";x.textContent="✕";x.setAttribute("aria-label","حذف "+pLabel(q));
     x.onclick=()=>{
       pushUndo("حذف "+pLabel(q));
-      cfg.p=cfg.p.filter(z=>z[1]!==q[1]);pickedP=pickedP.filter(z=>z!==q[1]);sentP=sentP.filter(z=>z!==q[1]);
+      cfg.p=cfg.p.filter(z=>pid(z)!==id);pickedP=pickedP.filter(z=>z!==id);sentP=sentP.filter(z=>z!==id);
       store.set("p_cfg",cfg);store.set("p_pickedP",pickedP);store.set("p_sentP",sentP);
       fillPeople();fillSetup();renderSend();
     };
@@ -608,7 +615,7 @@ function fillPeople(){
   else{
     const secs=[...clsList(),""].map(c=>({c,items:shown.filter(q=>pCls(q)===c)})).filter(x=>x.items.length);
     secs.forEach(sec=>{
-      const key=sec.c||NOC,ids=sec.items.map(q=>q[1]),np=ids.filter(x=>pickedP.includes(x)).length,all=np===ids.length;
+      const key=sec.c||NOC,ids=sec.items.map(pid),np=ids.filter(x=>pickedP.includes(x)).length,all=np===ids.length;
       const d=document.createElement("details");d.className="pcls"+(np?" has":"");
       d.open=!!qs||secs.length===1||!!openC[key];
       d.addEventListener("toggle",()=>{if(!qs&&secs.length>1)openC[key]=d.open});
@@ -714,12 +721,12 @@ function renderSend(){
   });
   const cp=$("chipsP");cp.innerHTML="";$("pLbl").hidden=!pickedP.length;
   pickedP.forEach(ph=>{
-    const person=(cfg.p||[]).find(q=>q[1]===ph)||["",ph],b=document.createElement("button");
+    const person=(cfg.p||[]).find(q=>pid(q)===ph)||["",pidPhone(ph)],b=document.createElement("button");
     b.type="button";b.className="chip"+(sentP.includes(ph)?" sent":"");b.textContent=pLabel(person);
     b.onclick=()=>{
       if(!sentP.includes(ph)){
         const t=current();if(!t){toast("اكتب المهمة أولًا");return}
-        window.open("https://wa.me/"+ph+"?text="+encodeURIComponent(t),"_blank");
+        window.open("https://wa.me/"+pidPhone(ph)+"?text="+encodeURIComponent(t),"_blank");
         if((last&&last.files&&last.files.length)||files.length)toast("فُتحت المحادثة بالنص — أرفق الملف من زر 📎 في واتساب");
       }
       pushUndo("تعليم الإرسال");
@@ -742,7 +749,7 @@ function renderLog(){
     d.innerHTML="<b>"+esc(it.type)+" · "+esc(nm(it.who))+"</b><div>"+esc(it.body.length>90?it.body.slice(0,90)+"…":it.body)+"</div><div class='meta'>"+esc(ar(GEN(it.type)?"":it.when))+" · "+esc(ar(it.groups.length))+" قروبات"+(it.people&&it.people.length?" · "+esc(ar(it.people.length))+" أفراد":"")+"</div>";
     const r=document.createElement("div");r.className="row";
     const u=document.createElement("button");u.type="button";u.className="ghost small";u.textContent="استخدام مرة أخرى";
-    u.onclick=()=>{pushUndo("تحميل مهمة سابقة");$("tpl").value=it.type==="تنبيه عام"?"مهمة عامة":it.type;$("msg").value=it.body;if(cfg.t.includes(it.who))$("teacher").value=it.who;picked=it.groups.filter(n=>cfg.g.some(g=>g[0]===n));store.set("p_picked",picked);pickedP=(it.people||[]).filter(ph=>(cfg.p||[]).some(q=>q[1]===ph));store.set("p_pickedP",pickedP);setPrio(it.prio>=0?it.prio:0);fillGroups();fillPeople();renderSend();render();openStep("s-task");$("logSec").hidden=true;toast("تم تحميل المهمة")};
+    u.onclick=()=>{pushUndo("تحميل مهمة سابقة");$("tpl").value=it.type==="تنبيه عام"?"مهمة عامة":it.type;$("msg").value=it.body;if(cfg.t.includes(it.who))$("teacher").value=it.who;picked=it.groups.filter(n=>cfg.g.some(g=>g[0]===n));store.set("p_picked",picked);pickedP=(it.people||[]).filter(ph=>(cfg.p||[]).some(q=>pid(q)===ph));store.set("p_pickedP",pickedP);setPrio(it.prio>=0?it.prio:0);fillGroups();fillPeople();renderSend();render();openStep("s-task");$("logSec").hidden=true;toast("تم تحميل المهمة")};
     const x=document.createElement("button");x.type="button";x.className="ghost small";x.textContent="حذف";
     x.onclick=()=>{pushUndo("حذف مهمة من السجل");log.splice(i,1);store.set("p_log",log);renderLog()};
     r.append(u,x);d.appendChild(r);L.appendChild(d);
@@ -893,7 +900,11 @@ $("pMove").onchange=e=>{
   const c=e.target.value;if(!c)return;
   pushUndo("نقل إلى "+c);
   const n=pickedP.length;
-  cfg.p.forEach(q=>{if(pickedP.includes(q[1])){if(c===NOC)q.length=2;else q[2]=c}});
+  const mp={};
+  cfg.p.forEach(q=>{const o=pid(q);if(pickedP.includes(o)){if(c===NOC)q.length=2;else q[2]=c;mp[o]=pid(q)}});
+  const seen={};cfg.p=cfg.p.filter(q=>{const k=pid(q);if(seen[k])return false;seen[k]=1;return true});
+  pickedP=[...new Set(pickedP.map(x=>mp[x]||x))];sentP=[...new Set(sentP.map(x=>mp[x]||x))];
+  store.set("p_pickedP",pickedP);store.set("p_sentP",sentP);
   openC[c]=true;store.set("p_cfg",cfg);fillPeople();fillSetup();renderSend();
   toast("نُقل "+ar(n)+" إلى «"+c+"»");
 };
@@ -901,11 +912,10 @@ $("pAdd").onclick=()=>{
   const ph=normPhone($("pPhone").value);
   if(!ph){toast("اكتب رقم جوال صحيحًا مثل ٠٥٠١٢٣٤٥٦٧");return}
   pushUndo("إضافة فرد");
-  const n=$("pName").value.trim(),ex=cfg.p.find(q=>q[1]===ph);
-  const c=$("pCls").value;
-  if(ex){if(n)ex[0]=n;if(c)ex[2]=c}else cfg.p.push(c?[n,ph,c]:[n,ph]);
+  const n=$("pName").value.trim(),c=$("pCls").value,key=c?ph+"@"+c:ph,ex=cfg.p.find(q=>pid(q)===key);
+  if(ex){if(n)ex[0]=n}else cfg.p.push(c?[n,ph,c]:[n,ph]);
   if(c)openC[c]=true;
-  if(!pickedP.includes(ph))pickedP.push(ph);
+  if(!pickedP.includes(key))pickedP.push(key);
   store.set("p_cfg",cfg);store.set("p_pickedP",pickedP);
   $("pSearch").value=n||ph;$("pName").value="";$("pPhone").value="";$("addBox").open=false;fillPeople();fillSetup();renderSend();toast("أُضيف وحُدِّد");
 };
@@ -917,7 +927,12 @@ document.querySelectorAll("#rtabs button").forEach(b=>b.onclick=()=>{
 function addPeople(list){
   pushUndo("استيراد أفراد");
   let added=0;
-  list.forEach(([n,ph,c])=>{const ex=cfg.p.find(q=>q[1]===ph);if(ex){if(n&&!ex[0])ex[0]=n;if(c)ex[2]=c}else{cfg.p.push(c?[n,ph,c]:[n,ph]);added++}});
+  list.forEach(([n,ph,c])=>{
+    const key=c?ph+"@"+c:ph;let ex=cfg.p.find(q=>pid(q)===key);
+    if(!ex&&c){ex=cfg.p.find(q=>q[1]===ph&&!q[2]);if(ex){ex[2]=c;if(n)ex[0]=n;pickedP=pickedP.map(x=>x===ph?key:x);sentP=sentP.map(x=>x===ph?key:x)}}
+    if(ex){if(n&&!ex[0])ex[0]=n}else{cfg.p.push(c?[n,ph,c]:[n,ph]);added++}
+  });
+  store.set("p_pickedP",pickedP);store.set("p_sentP",sentP);
   store.set("p_cfg",cfg);fillPeople();fillSetup();renderSend();
   return added;
 }
