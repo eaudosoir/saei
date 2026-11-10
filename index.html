@@ -400,7 +400,7 @@ footer{text-align:center;color:var(--muted);font-size:.8rem}
     </details>
   </section>
 
-  <footer>تصميم: أ. عبدالله ال عواد · الإصدار ٢٨</footer>
+  <footer>تصميم: أ. عبدالله ال عواد · الإصدار ٢٩</footer>
 </div>
 <div class="scrim" id="installSheet" hidden>
   <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="insT">
@@ -942,8 +942,8 @@ async function readPeopleFile(f){
   if(/\.(xlsx|xls)$/i.test(f.name)){
     try{await loadXlsx()}catch(e){toast("تعذّر تحميل قارئ Excel — احفظ الملف بصيغة CSV وارفعه");return}
     const wb=XLSX.read(await f.arrayBuffer(),{type:"array"});
-    const rows=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{header:1,raw:false,defval:""});
-    text=rows.map(r=>r.join("\t")).join("\n");
+    /* كل أوراق الملف — ملف نور يضع الطلاب في الورقة الثانية */
+    text=wb.SheetNames.map(nm=>XLSX.utils.sheet_to_json(wb.Sheets[nm],{header:1,raw:false,defval:""}).map(r=>r.join("\t")).join("\n")).join("\n");
   }else{
     const buf=await f.arrayBuffer();
     try{text=new TextDecoder("utf-8",{fatal:true}).decode(buf)}catch(e){text=new TextDecoder("windows-1256").decode(buf)}
