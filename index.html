@@ -152,6 +152,16 @@ button:active,.btn:active{transform:scale(.98)}
 .xbtn{background:none;color:var(--red);border:1.5px solid var(--line);border-radius:14px;padding:0 12px;font-size:1.05rem;flex:none}
 .addp{display:grid;gap:8px;border-top:1px dashed var(--line);padding-top:12px}
 .phone{direction:ltr;text-align:right}
+.pcls{border:1.5px solid var(--line);border-radius:16px;background:var(--surface);padding:0;overflow:hidden}
+.pcls>summary{display:flex;align-items:center;gap:8px;padding:11px 12px;cursor:pointer;font-weight:900;color:var(--navy);list-style:none}
+.pcls>summary::-webkit-details-marker{display:none}
+.pcls>summary::before{content:"◂";color:var(--muted);font-size:.9rem;transition:transform .15s}
+.pcls[open]>summary::before{transform:rotate(-90deg)}
+.pcls>summary .cn{flex:1;min-width:0}
+.pcls>summary .cc{font-size:.8rem;font-weight:700;color:var(--muted);white-space:nowrap}
+.pcls.has>summary .cc{color:var(--accent)}
+.pcls .pin{display:grid;gap:8px;padding:0 10px 10px}
+#pMove{font-size:.9rem;padding:9px 13px}
 #chipsP{grid-template-columns:repeat(2,1fr)}
 .tools{position:relative;z-index:1;display:flex}
 .undoBtn{background:rgba(255,255,255,.18);color:#fff;border:1px solid rgba(255,255,255,.35);padding:6px 14px;border-radius:999px;font-size:.85rem;font-weight:700;backdrop-filter:blur(6px)}
@@ -295,20 +305,22 @@ footer{text-align:center;color:var(--muted);font-size:.8rem}
           <div style="display:grid;gap:10px;margin-top:10px">
             <input type="text" id="pName" placeholder="الاسم — مثال: ولي أمر الطالب أحمد">
             <input type="text" class="phone" id="pPhone" inputmode="tel" placeholder="05XXXXXXXX">
+            <select id="pCls" aria-label="الفصل"></select>
             <button class="ghost" id="pAdd" type="button">إضافة وتحديد</button>
             <p class="hint">يُحفظ الرقم على هذا الجهاز فقط لاستخدامه لاحقًا، ويمكنك حذفه بزر ✕.</p>
           </div>
         </details>
         <p class="hint" id="noP" hidden>لم تُضف أفرادًا بعد. أضف رقم ولي الأمر من الأسفل.</p>
         <div class="pgrid" id="people"></div>
+        <select id="pMove" aria-label="نقل الأسماء المحدَّدة إلى فصل" hidden></select>
         <div class="addp">
           <label>رفع قائمة أسماء من ملف</label>
-          <label class="drop" for="pFile"><span>📎 اختر ملف Excel أو CSV أو نص</span><small>عمودان: الاسم ثم رقم الجوال</small></label>
+          <label class="drop" for="pFile"><span>📎 اختر ملف Excel أو CSV أو نص</span><small>الأعمدة: الاسم ثم رقم الجوال ثم الفصل (اختياري)</small></label>
           <input type="file" id="pFile" accept=".csv,.txt,.xlsx,.xls,text/csv,text/plain" hidden>
         </div>
         <div class="addp">
           <label for="pPaste">أو الصق الأسماء هنا (من Excel أو واتساب أو أي مكان)</label>
-          <textarea id="pPaste" style="min-height:90px" placeholder="أحمد محمد	0501234567&#10;خالد علي | 0555555555&#10;0509998877"></textarea>
+          <textarea id="pPaste" style="min-height:90px" placeholder="أحمد محمد	0501234567	رابع أ&#10;خالد علي | 0555555555 | خامس ج&#10;0509998877"></textarea>
           <button class="ghost" id="pPasteAdd" type="button">إضافة الأسماء الملصوقة</button>
         </div>
       </div>
@@ -374,8 +386,8 @@ footer{text-align:center;color:var(--muted);font-size:.8rem}
           <textarea id="gList" placeholder="رابع أ | https://chat.whatsapp.com/..."></textarea>
         </div>
         <div>
-          <label for="pList">الأفراد — فرد في كل سطر: الاسم | رقم الجوال (٠٥XXXXXXXX). ويمكنك لصق عمودين مباشرة من Excel</label>
-          <textarea id="pList" placeholder="ولي أمر الطالب أحمد | 0501234567"></textarea>
+          <label for="pList">الأفراد — فرد في كل سطر: الاسم | رقم الجوال (٠٥XXXXXXXX) | الفصل (اختياري، مثل: رابع أ). ويمكنك لصق الأعمدة مباشرة من Excel</label>
+          <textarea id="pList" placeholder="ولي أمر الطالب أحمد | 0501234567 | رابع أ"></textarea>
         </div>
         <div>
           <label for="sender">اسم المدرسة أسفل الرسالة</label>
@@ -388,7 +400,7 @@ footer{text-align:center;color:var(--muted);font-size:.8rem}
     </details>
   </section>
 
-  <footer>تصميم: أ. عبدالله ال عواد · الإصدار ٢٦</footer>
+  <footer>تصميم: أ. عبدالله ال عواد · الإصدار ٢٧</footer>
 </div>
 <div class="scrim" id="installSheet" hidden>
   <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="insT">
@@ -462,10 +474,18 @@ function parseLines(text){
     let ph="",pi=-1;
     tk.forEach((x,i)=>{if(!ph){const v=normPhone(x);if(v){ph=v;pi=i}}});
     if(!ph){bad++;return}
-    const rest=tk.filter((x,i)=>i!==pi&&!new RegExp("^[+\\-()\\s"+DIG+"]+$").test(x));
+    let cls="";const rest=[];
+    tk.forEach((x,i)=>{
+      if(i===pi)return;
+      const k=knownCls(x);
+      if(k&&!cls){cls=k;return}
+      if(new RegExp("^[+\\-()\\s"+DIG+"]+$").test(x))return;
+      if(i>pi&&!cls&&rest.length&&x.length<=20){cls=x;return}
+      rest.push(x);
+    });
     const inTok=tk[pi].replace(new RegExp("[+\\-()\\s"+DIG+"]+","g")," ").trim();
     const n=[...rest,inTok].filter(Boolean).join(" ").trim();
-    if(!list.some(q=>q[1]===ph))list.push([n,ph]);
+    if(!list.some(q=>q[1]===ph))list.push(cls?[n,ph,cls]:[n,ph]);
   });
   return {list,bad};
 }
@@ -536,16 +556,37 @@ function fillGroups(){
   $("gcount").textContent=ar(picked.length)+" من "+ar(cfg.g.length);
 }
 function nrm(s){return String(s||"").replace(/[ً-ْـ]/g,"").replace(/[أإآ]/g,"ا").replace(/ة/g,"ه").replace(/ى/g,"ي").replace(/[٠-٩]/g,d=>"٠١٢٣٤٥٦٧٨٩".indexOf(d)).replace(/\s+/g," ").trim().toLowerCase()}
-function visP(){const qs=nrm(($("pSearch")||{}).value||"");const P=cfg.p||[];return (qs?P.filter(q=>nrm(pLabel(q)+" "+q[1]).includes(qs)):P).map(q=>q[1])}
+/* الفصل: يقبل «رابع أ» و«الرابع/أ» و«٤ أ» و«4-1» ويطابقه بأسماء القروبات */
+const GW=["اول","ثاني","ثالث","رابع","خامس","سادس"],SW=["ا","ب","ج","د","ه","و"];
+function clsKey(x){
+  let s=nrm(x).replace(/الصف|الفصل|فصل|صف/g," ").replace(/[\/\\\-_.()]/g," ").replace(/\s+/g," ").trim();
+  const m=s.match(/^(?:ال)?(اول|اولي|ثاني|ثالث|رابع|خامس|سادس|[1-6])\s*(?:ال)?([ابجدهو]|[1-6])?$/);
+  if(!m)return s;
+  const g=/\d/.test(m[1])?GW[m[1]-1]:m[1].replace("اولي","اول");
+  const c=m[2]?(/\d/.test(m[2])?SW[m[2]-1]:m[2]):"";
+  return c?g+" "+c:g;
+}
+function knownCls(x){if(!x||!cfg||!cfg.g)return "";const k=clsKey(x);if(!k)return "";const g=cfg.g.find(g=>clsKey(g[0])===k);return g?g[0]:""}
+const NOC="بدون فصل";
+const pCls=q=>q[2]||"";
+function clsList(){const out=cfg.g.map(g=>g[0]);(cfg.p||[]).forEach(q=>{if(q[2]&&!out.includes(q[2]))out.push(q[2])});return out}
+function pMatch(q,qs){return nrm(pLabel(q)+" "+q[1]+" "+pCls(q)).includes(qs)}
+let openC={};
+function fillClsSelects(){
+  const L=clsList(),a=$("pCls"),b=$("pMove");
+  if(a){const cur=a.value;a.innerHTML='<option value="">الفصل (اختياري)…</option>'+L.map(c=>'<option>'+esc(c)+'</option>').join("");if(L.includes(cur))a.value=cur}
+  if(b){b.innerHTML='<option value="">نقل المحدَّدين ('+ar(pickedP.length)+') إلى فصل…</option>'+L.map(c=>'<option>'+esc(c)+'</option>').join("")+'<option value="'+NOC+'">'+NOC+'</option>';b.value="";b.hidden=!pickedP.length}
+}
+function visP(){const qs=nrm(($("pSearch")||{}).value||"");const P=cfg.p||[];return (qs?P.filter(q=>pMatch(q,qs)):P).map(q=>q[1])}
 function fillPeople(){
   const box=$("people");box.innerHTML="";
   const P=cfg.p||[];
   pickedP=pickedP.filter(x=>P.some(q=>q[1]===x));
   $("noP").hidden=P.length>0;
   const qs=nrm(($("pSearch")||{}).value||"");
-  const shown=qs?P.filter(q=>nrm(pLabel(q)+" "+q[1]).includes(qs)):P;
+  const shown=qs?P.filter(q=>pMatch(q,qs)):P;
   const fd=$("pFound");if(fd){fd.hidden=!qs;fd.textContent=shown.length?("نتائج البحث: "+ar(shown.length)+" من "+ar(P.length)):"لا توجد نتائج مطابقة"}
-  shown.forEach(q=>{
+  const mkRow=q=>{
     const on=pickedP.includes(q[1]),row=document.createElement("div");row.className="prow";
     const l=document.createElement("label");l.className="g"+(on?" on":"");
     l.innerHTML='<input type="checkbox"'+(on?" checked":"")+'><span>'+esc(pLabel(q))+' <small>'+esc(q[1])+'</small></span>';
@@ -561,15 +602,38 @@ function fillPeople(){
       store.set("p_cfg",cfg);store.set("p_pickedP",pickedP);store.set("p_sentP",sentP);
       fillPeople();fillSetup();renderSend();
     };
-    row.append(l,x);box.appendChild(row);
-  });
+    row.append(l,x);return row;
+  };
+  if(!P.some(q=>q[2])){shown.forEach(q=>box.appendChild(mkRow(q)))}
+  else{
+    const secs=[...clsList(),""].map(c=>({c,items:shown.filter(q=>pCls(q)===c)})).filter(x=>x.items.length);
+    secs.forEach(sec=>{
+      const key=sec.c||NOC,ids=sec.items.map(q=>q[1]),np=ids.filter(x=>pickedP.includes(x)).length,all=np===ids.length;
+      const d=document.createElement("details");d.className="pcls"+(np?" has":"");
+      d.open=!!qs||secs.length===1||!!openC[key];
+      d.addEventListener("toggle",()=>{if(!qs&&secs.length>1)openC[key]=d.open});
+      const sm=document.createElement("summary");
+      sm.innerHTML='<span class="cn">'+esc(key)+'</span><span class="cc">'+ar(np)+" من "+ar(ids.length)+'</span>';
+      const b=document.createElement("button");b.type="button";b.className="ghost small";b.textContent=all?"إلغاء الفصل":"تحديد الفصل";
+      b.onclick=e=>{
+        e.preventDefault();e.stopPropagation();
+        pushUndo((all?"إلغاء تحديد ":"تحديد ")+key);
+        pickedP=all?pickedP.filter(x=>!ids.includes(x)):[...new Set([...pickedP,...ids])];
+        store.set("p_pickedP",pickedP);fillPeople();renderSend();if(!all)autoAdvance("s-groups",2500);
+      };
+      sm.appendChild(b);d.appendChild(sm);
+      const inn=document.createElement("div");inn.className="pin";sec.items.forEach(q=>inn.appendChild(mkRow(q)));
+      d.appendChild(inn);box.appendChild(d);
+    });
+  }
   $("pcount").textContent=ar(pickedP.length)+" من "+ar(P.length);
+  fillClsSelects();
 }
 function fillSetup(){
   $("tList").value=cfg.t.join("\n");
   $("gList").value=cfg.g.map(([n,l])=>l?n+" | "+l:n).join("\n");
   $("sender").value=cfg.s;
-  $("pList").value=(cfg.p||[]).map(([n,ph])=>n?n+" | "+ph:ph).join("\n");
+  $("pList").value=(cfg.p||[]).map(([n,ph,c])=>(n?n+" | "+ph:ph)+(c?" | "+c:"")).join("\n");
 }
 
 /* ---------- date & time ---------- */
@@ -825,12 +889,22 @@ $("copy").onclick=copy;
 $("pAll").onclick=()=>{pushUndo("تحديد الأفراد");pickedP=[...new Set([...pickedP,...visP()])];store.set("p_pickedP",pickedP);fillPeople();renderSend()};
 $("pNone").onclick=()=>{pushUndo("إلغاء تحديد الأفراد");const v=visP();pickedP=pickedP.filter(x=>!v.includes(x));store.set("p_pickedP",pickedP);fillPeople();renderSend()};
 $("pSearch").oninput=()=>fillPeople();
+$("pMove").onchange=e=>{
+  const c=e.target.value;if(!c)return;
+  pushUndo("نقل إلى "+c);
+  const n=pickedP.length;
+  cfg.p.forEach(q=>{if(pickedP.includes(q[1])){if(c===NOC)q.length=2;else q[2]=c}});
+  openC[c]=true;store.set("p_cfg",cfg);fillPeople();fillSetup();renderSend();
+  toast("نُقل "+ar(n)+" إلى «"+c+"»");
+};
 $("pAdd").onclick=()=>{
   const ph=normPhone($("pPhone").value);
   if(!ph){toast("اكتب رقم جوال صحيحًا مثل ٠٥٠١٢٣٤٥٦٧");return}
   pushUndo("إضافة فرد");
   const n=$("pName").value.trim(),ex=cfg.p.find(q=>q[1]===ph);
-  if(ex){if(n)ex[0]=n}else cfg.p.push([n,ph]);
+  const c=$("pCls").value;
+  if(ex){if(n)ex[0]=n;if(c)ex[2]=c}else cfg.p.push(c?[n,ph,c]:[n,ph]);
+  if(c)openC[c]=true;
   if(!pickedP.includes(ph))pickedP.push(ph);
   store.set("p_cfg",cfg);store.set("p_pickedP",pickedP);
   $("pSearch").value=n||ph;$("pName").value="";$("pPhone").value="";$("addBox").open=false;fillPeople();fillSetup();renderSend();toast("أُضيف وحُدِّد");
@@ -843,7 +917,7 @@ document.querySelectorAll("#rtabs button").forEach(b=>b.onclick=()=>{
 function addPeople(list){
   pushUndo("استيراد أفراد");
   let added=0;
-  list.forEach(([n,ph])=>{const ex=cfg.p.find(q=>q[1]===ph);if(ex){if(n&&!ex[0])ex[0]=n}else{cfg.p.push([n,ph]);added++}});
+  list.forEach(([n,ph,c])=>{const ex=cfg.p.find(q=>q[1]===ph);if(ex){if(n&&!ex[0])ex[0]=n;if(c)ex[2]=c}else{cfg.p.push(c?[n,ph,c]:[n,ph]);added++}});
   store.set("p_cfg",cfg);fillPeople();fillSetup();renderSend();
   return added;
 }
@@ -961,7 +1035,7 @@ function autoAdvance(id,delay){clearTimeout(_adv[id]);_adv[id]=setTimeout(()=>{c
 $("msg").addEventListener("change",()=>autoAdvance("s-task",300));
 $("prio").addEventListener("click",()=>autoAdvance("s-task",900));
 $("groups").addEventListener("click",()=>autoAdvance("s-groups",2500));
-$("people").addEventListener("click",()=>autoAdvance("s-groups",2500));
+$("people").addEventListener("change",()=>autoAdvance("s-groups",2500));
 ["dt","tm","whenLbl"].forEach(i=>$(i).addEventListener("change",()=>autoAdvance("whenSec",2000)));
 /* ---------- دخول المعلم بالرقم السري + لوحة المعلمين ---------- */
 const FB={k:"AIzaSyBhtCzp3axk_JYgbtI3Kf3wq9a_O-5F-K0",p:"fasli-873ee"};
